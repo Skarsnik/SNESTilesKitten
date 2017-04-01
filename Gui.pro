@@ -20,7 +20,8 @@ SOURCES += main.cpp\
     c_stuff/mapping_lorom.c \
     c_stuff/rommapping.c \
     c_stuff/palette.c \
-    graphicspalettecoloritem.cpp
+    graphicspalettecoloritem.cpp \
+    rominfo.cpp
 
 HEADERS  += mainui.h \
     tilepreset.h \
@@ -29,6 +30,7 @@ HEADERS  += mainui.h \
     compressioninterface.h \
     compressioninfo.h \
     c_stuff/palette.h \
-    graphicspalettecoloritem.h
+    graphicspalettecoloritem.h \
+    rominfo.h
 
 FORMS    += mainui.ui

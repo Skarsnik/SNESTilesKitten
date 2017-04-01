@@ -1,3 +1,4 @@
 TEMPLATE = subdirs
 
-SUBDIRS = alttpcompression.pro
+SUBDIRS = alttpcompression.pro \
+          terranigma.pro

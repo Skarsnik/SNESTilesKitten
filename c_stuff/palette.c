@@ -16,14 +16,14 @@ s_palette *palette_create(const unsigned int size, const unsigned int id)
 s_palette*	extract_palette(const char* data, const unsigned int offset, const unsigned int palette_size)
 {
   s_palette* toret = palette_create(palette_size, 0);
-  unsigned colnum = 0;
-  for (int i = offset; i < palette_size * 2; i += 2)
+  unsigned int colnum = 0;
+  for (int i = 0; i < palette_size * 2; i += 2)
   {
     unsigned short snes_color;
-    printf("%02X%02X - ", (uchar) data[i], (uchar) data[i + 1]);
-    snes_color = ((uchar)data[i + 1]) << 8;
+    //printf("%02X%02X - ", (uchar) data[i + offset], (uchar) data[i + 1 + offset]);
+    snes_color = ((uchar)data[i + 1 + offset]) << 8;
     //printf("snescolor1 : %04X -- ", snes_color);
-    snes_color = snes_color | ((uchar)data[i]);
+    snes_color = snes_color | ((uchar)data[i + offset]);
     //printf("snescolor1 : %04X -- ", snes_color);
     toret->colors[colnum] = convertcolor_snes_to_rgb(snes_color);
     colnum++;

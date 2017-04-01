@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>915</width>
-    <height>565</height>
+    <width>910</width>
+    <height>542</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,10 +15,13 @@
   </property>
   <widget class="QWidget" name="centralWidget">
    <widget class="QPushButton" name="pushButton_2">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>340</x>
-      <y>450</y>
+      <y>460</y>
       <width>81</width>
       <height>23</height>
      </rect>
@@ -28,10 +31,13 @@
     </property>
    </widget>
    <widget class="QPushButton" name="pushButton_3">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
-      <x>530</x>
-      <y>450</y>
+      <x>560</x>
+      <y>460</y>
       <width>101</width>
       <height>23</height>
      </rect>
@@ -43,8 +49,8 @@
    <widget class="QGraphicsView" name="graphicsView">
     <property name="geometry">
      <rect>
-      <x>330</x>
-      <y>70</y>
+      <x>310</x>
+      <y>60</y>
       <width>391</width>
       <height>281</height>
      </rect>
@@ -53,8 +59,8 @@
    <widget class="QGraphicsView" name="paletteGraphicsView">
     <property name="geometry">
      <rect>
-      <x>340</x>
-      <y>390</y>
+      <x>440</x>
+      <y>370</y>
       <width>261</width>
       <height>41</height>
      </rect>
@@ -63,14 +69,14 @@
    <widget class="QLabel" name="label_7">
     <property name="geometry">
      <rect>
-      <x>450</x>
-      <y>370</y>
+      <x>560</x>
+      <y>350</y>
       <width>47</width>
       <height>13</height>
      </rect>
     </property>
     <property name="text">
-     <string>Palette :</string>
+     <string>Palette</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_8">
@@ -86,16 +92,6 @@
      <string>Tiles show per row</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="lineEdit_2">
-    <property name="geometry">
-     <rect>
-      <x>850</x>
-      <y>90</y>
-      <width>21</width>
-      <height>20</height>
-     </rect>
-    </property>
-   </widget>
    <widget class="QSlider" name="horizontalSlider">
     <property name="geometry">
      <rect>
@@ -105,8 +101,23 @@
       <height>19</height>
      </rect>
     </property>
+    <property name="minimum">
+     <number>1</number>
+    </property>
+    <property name="singleStep">
+     <number>5</number>
+    </property>
+    <property name="value">
+     <number>30</number>
+    </property>
     <property name="orientation">
      <enum>Qt::Horizontal</enum>
+    </property>
+    <property name="tickPosition">
+     <enum>QSlider::TicksAbove</enum>
+    </property>
+    <property name="tickInterval">
+     <number>5</number>
     </property>
    </widget>
    <widget class="QLabel" name="label_9">
@@ -125,7 +136,7 @@
    <widget class="QLabel" name="label_5">
     <property name="geometry">
      <rect>
-      <x>160</x>
+      <x>250</x>
       <y>0</y>
       <width>621</width>
       <height>39</height>
@@ -136,12 +147,12 @@
 PC locations all assume the rom does not have the SMC header</string>
     </property>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>40</y>
-      <width>311</width>
+      <y>50</y>
+      <width>291</width>
       <height>467</height>
      </rect>
     </property>
@@ -155,7 +166,7 @@ PC locations all assume the rom does not have the SMC header</string>
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout">
           <item>
-           <widget class="QLineEdit" name="lineEdit"/>
+           <widget class="QLineEdit" name="romFileLineEdit"/>
           </item>
           <item>
            <widget class="QPushButton" name="romOpenButton">
@@ -179,7 +190,7 @@ PC locations all assume the rom does not have the SMC header</string>
            </widget>
           </item>
           <item>
-           <widget class="QRadioButton" name="radioButton_2">
+           <widget class="QRadioButton" name="noHeaderRadioButton">
             <property name="text">
              <string>No Header</string>
             </property>
@@ -216,7 +227,7 @@ PC locations all assume the rom does not have the SMC header</string>
            </widget>
           </item>
           <item>
-           <widget class="QRadioButton" name="radioButton_4">
+           <widget class="QRadioButton" name="hiRomRadioButton">
             <property name="text">
              <string>HiROM</string>
             </property>
@@ -252,14 +263,21 @@ PC locations all assume the rom does not have the SMC header</string>
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_4">
           <item>
-           <widget class="QLabel" name="label">
+           <widget class="QRadioButton" name="tilesSNESRadioButton">
             <property name="text">
              <string>SNES Start :</string>
             </property>
+            <attribute name="buttonGroup">
+             <string notr="true">tilesLocationButtonGroup</string>
+            </attribute>
            </widget>
           </item>
           <item>
-           <widget class="QLineEdit" name="snesAddrLineEdit"/>
+           <widget class="QLineEdit" name="snesAddrLineEdit">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+           </widget>
           </item>
           <item>
            <spacer name="horizontalSpacer_4">
@@ -279,14 +297,21 @@ PC locations all assume the rom does not have the SMC header</string>
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_8">
           <item>
-           <widget class="QLabel" name="label_6">
+           <widget class="QRadioButton" name="tilesPCRadioButton">
             <property name="text">
-             <string>PC Start</string>
+             <string>PC Start :</string>
             </property>
+            <attribute name="buttonGroup">
+             <string notr="true">tilesLocationButtonGroup</string>
+            </attribute>
            </widget>
           </item>
           <item>
-           <widget class="QLineEdit" name="pcAddrLineEdit"/>
+           <widget class="QLineEdit" name="pcAddrLineEdit">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+           </widget>
           </item>
           <item>
            <spacer name="horizontalSpacer_5">
@@ -441,7 +466,11 @@ PC locations all assume the rom does not have the SMC header</string>
              </widget>
             </item>
             <item>
-             <widget class="QLineEdit" name="paletteSNESLocationLineEdit"/>
+             <widget class="QLineEdit" name="paletteSNESLocationLineEdit">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+             </widget>
             </item>
             <item>
              <spacer name="horizontalSpacer_7">
@@ -468,7 +497,11 @@ PC locations all assume the rom does not have the SMC header</string>
              </widget>
             </item>
             <item>
-             <widget class="QLineEdit" name="palettePCLocationLineEdit"/>
+             <widget class="QLineEdit" name="palettePCLocationLineEdit">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+             </widget>
             </item>
             <item>
              <spacer name="horizontalSpacer_8">
@@ -492,32 +525,71 @@ PC locations all assume the rom does not have the SMC header</string>
      </item>
     </layout>
    </widget>
-  </widget>
-  <widget class="QMenuBar" name="menuBar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>915</width>
-     <height>21</height>
-    </rect>
-   </property>
-   <widget class="QMenu" name="menuProfils">
-    <property name="title">
-     <string>preset</string>
+   <widget class="QSpinBox" name="tilesPerRowSpinBox">
+    <property name="geometry">
+     <rect>
+      <x>860</x>
+      <y>90</y>
+      <width>42</width>
+      <height>22</height>
+     </rect>
     </property>
-    <addaction name="actionSave_profil"/>
-    <addaction name="actionLoad_profil"/>
+    <property name="value">
+     <number>8</number>
+    </property>
    </widget>
-   <addaction name="menuProfils"/>
-  </widget>
-  <widget class="QToolBar" name="mainToolBar">
-   <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>false</bool>
-   </attribute>
+   <widget class="QPushButton" name="refreshPushButton">
+    <property name="geometry">
+     <rect>
+      <x>320</x>
+      <y>380</y>
+      <width>75</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Refresh</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="presetOpenPushButton">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>10</y>
+      <width>91</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Open Preset</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="presetSavePushButton">
+    <property name="geometry">
+     <rect>
+      <x>140</x>
+      <y>10</y>
+      <width>91</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Save Preset</string>
+    </property>
+   </widget>
+   <widget class="Line" name="line">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>30</y>
+      <width>881</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionSave_profil">
@@ -535,8 +607,9 @@ PC locations all assume the rom does not have the SMC header</string>
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroup_2"/>
-  <buttongroup name="buttonGroup_3"/>
   <buttongroup name="headerButtonGroup"/>
+  <buttongroup name="buttonGroup_3"/>
+  <buttongroup name="buttonGroup_2"/>
+  <buttongroup name="tilesLocationButtonGroup"/>
  </buttongroups>
 </ui>

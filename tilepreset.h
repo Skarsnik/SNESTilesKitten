@@ -14,13 +14,13 @@ public:
     QString name;
     QString romName;
     QString romType;
-    bool    header;
 
-    unsigned int tilesLocation;
+    unsigned int SNESTilesLocation;
     unsigned int pcTilesLocation;
-    unsigned int paletteLocation;
+    unsigned int SNESPaletteLocation;
     unsigned int pcPaletteLocation;
-    unsigned int size;
+    unsigned int length;
+    unsigned int tilesPerRow;
 
     unsigned int bpp;
     QString compression;

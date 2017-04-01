@@ -20,3 +20,5 @@ HEADERS += alttpcompression.h \
 
 DISTFILES += alttpcompression.json
 
+
+

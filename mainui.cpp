@@ -12,29 +12,47 @@
 #include "c_stuff/rommapping.h"
 #include "c_stuff/palette.h"
 
+/*
+ * Nethr4z: for Terranigma you can test this: 39E2E2 (pc offset)
+ */
+
 MainUI::MainUI(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainUI)
 {
     ui->setupUi(this);
-    currentSet.header = true;
-    currentSet.bpp = 4;
-    currentSet.romType = "LoROM";
-    currentSet.size = 0x86FFF - 0x80000;
-    currentSet.tilesLocation = 0; // 0x10F000;//0x108000; $80000-$86FFF
-    currentSet.pcTilesLocation = 0x80000;
-    currentSet.compression = "None";
-    currentSet.paletteLocation = 0;
-    currentSet.pcPaletteLocation = 0xDD308;
+    ui->presetOpenPushButton->setIcon(style()->standardPixmap(QStyle::SP_DialogOpenButton));
+    ui->presetSavePushButton->setIcon(style()->standardPixmap(QStyle::SP_DialogSaveButton));
+    QRegExpValidator* hexValid = new QRegExpValidator(QRegExp("[0-F|a-f]{0,8}"));
+    romHasHeader = true;
+
+    ui->snesAddrLineEdit->setValidator(hexValid);
+    ui->pcAddrLineEdit->setValidator(hexValid);
+    ui->palettePCLocationLineEdit->setValidator(hexValid);
+    ui->paletteSNESLocationLineEdit->setValidator(hexValid);
+
+    if (1) {
+        romHasHeader = true;
+        currentSet.bpp = 4;
+        currentSet.romType = "LoROM";
+        currentSet.length = 0x86FFF - 0x80000;
+        currentSet.SNESTilesLocation = 0; // 0x10F000;//0x108000; $80000-$86FFF
+        currentSet.pcTilesLocation = 0x80000;
+        currentSet.compression = "None";
+        currentSet.SNESPaletteLocation = 0;
+        currentSet.pcPaletteLocation = 0xDD308;
+        openRom("D:\\Emulation\\Zelda - A Link to the Past\\Zelda - A Link to the Past.smc");
+    }
+
+    tilesZoom = 30;
+    tilesPerRow = 8;
     tileScene = new QGraphicsScene();
     palScene = new QGraphicsScene();
-    romFile = "D:\\Emulation\\Zelda - A Link to the Past\\Zelda - A Link to the Past.smc";
-
     ui->graphicsView->setScene(tileScene);
     ui->paletteGraphicsView->setScene(palScene);
     setGrayscalePalette();
     buildPaletteScene();
-    //ui->graphicsView->scale(5, 5);
+
     connect(ui->headerButtonGroup, SIGNAL(buttonClicked(int)), this, SLOT(on_headerButtonGroup_clicked(int)));
     if (loadCompressionPlugins())
     {
@@ -70,13 +88,13 @@ bool MainUI::extractTiles()
     QFile romFile(romFile);
     uint    filePos = 0;
     enum rom_type rType = HiROM;
-    unsigned int size = currentSet.size;
+    unsigned int size = currentSet.length;
 
     if (currentSet.romType == "LoROM")
         rType = LoROM;
     romFile.open(QIODevice::ReadOnly);
-    if (currentSet.tilesLocation != 0) {
-        filePos = rommapping_snes_to_pc(currentSet.tilesLocation, rType, currentSet.header);
+    if (currentSet.SNESTilesLocation != 0) {
+        filePos = rommapping_snes_to_pc(currentSet.SNESTilesLocation, rType, romHasHeader);
         if (filePos == -1)
         {
           qDebug() << rommapping_error_text;
@@ -85,13 +103,13 @@ bool MainUI::extractTiles()
     } else {
         qDebug() << "direct file location";
         filePos = currentSet.pcTilesLocation;
-        if (currentSet.header)
+        if (romHasHeader)
             filePos += 0x200;
     }
 
     qDebug() << "Location" << QString::number(filePos, 16);
     romFile.seek(filePos);
-    QByteArray qdata = romFile.read(currentSet.size);
+    QByteArray qdata = romFile.read(currentSet.length);
     char*   data = qdata.data();
     QString compressionSelected = currentSet.compression;
     if (compressionSelected != "None") {
@@ -100,8 +118,9 @@ bool MainUI::extractTiles()
         if (data == NULL)
             return false;
     }
+    rawTiles.clear();
     qDebug() << "Size : " << size;
-    for (int tilePos = 0; tilePos < size; tilePos += currentSet.bpp * 8) {
+    for (unsigned int tilePos = 0; tilePos < size; tilePos += currentSet.bpp * 8) {
         tile8   newTile = unpack_bpp_tile(data, tilePos, currentSet.bpp);
         rawTiles.append(newTile);
     }
@@ -110,6 +129,7 @@ bool MainUI::extractTiles()
 
 void MainUI::createImageList()
 {
+    images.clear();
     foreach (const tile8 tile, rawTiles)
     {
         QImage newImage(8, 8, QImage::Format_Indexed8);
@@ -134,20 +154,19 @@ void MainUI::createImageList()
     }
 }
 
-void MainUI::buildScene()
+void MainUI::buildTileScene()
 {
     tileScene->clear();
     int i = 0;
     int j = 0;
-    //scene->addRect(0, 0, 120, (images.size() / 8) * 30, QPen(Qt::blue), Qt::blue);
     tileScene->setBackgroundBrush(Qt::blue);
     foreach(QImage image, images)
     {
-        QGraphicsPixmapItem *newPixItem = new QGraphicsPixmapItem(QPixmap().fromImage(image).scaled(30, 30));
+        QGraphicsPixmapItem *newPixItem = new QGraphicsPixmapItem(QPixmap().fromImage(image).scaled(tilesZoom, tilesZoom));
         newPixItem->setPos(i * newPixItem->boundingRect().width() + i, j * newPixItem->boundingRect().width() + j);
         tileScene->addItem(newPixItem);
         i++;
-        if (i % 16 == 0) {
+        if (i % tilesPerRow == 0) {
             j++;
             i = 0;
         }
@@ -177,11 +196,11 @@ void MainUI::buildPaletteScene()
     }
 }
 
-void MainUI::setGrayscalePalette()
+void MainUI::setGrayscalePalette(unsigned int paletteSize)
 {
     mPalette.clear();
-    unsigned int psize = qPow(2, currentSet.bpp);
-    for (int i = 0; i < psize; i++)
+    unsigned int psize = paletteSize;
+    for (unsigned int i = 0; i < psize; i++)
     {
         QRgb color = qRgb(i * (255 / psize), i * (255 / psize), i * (255 / psize));
         mPalette.append(color);
@@ -235,18 +254,21 @@ bool MainUI::extractPalette()
     mPalette.clear();
     QFile plop(romFile);
     unsigned filePos = currentSet.pcPaletteLocation;
-    if (currentSet.header)
+    if (romHasHeader)
         filePos += 0x200;
 
     plop.open(QIODevice::ReadOnly);
     plop.seek(filePos);
-    unsigned int palette_size = qPow(2, currentSet.bpp);
+    unsigned int palette_size = qPow(2, currentSet.bpp) - 1;
     QByteArray ab = plop.read(palette_size * 2);
+    qDebug() << ab;
     char* data = ab.data();
+    mPalette.append(qRgb(0x99, 0x99, 0x99));
     s_palette* raw_pal = extract_palette(data, 0, palette_size);
-    for (int i = 0; i < palette_size; i++)
+    for (unsigned int i = 0; i < palette_size; i++)
     {
         m_color col = raw_pal->colors[i];
+        qDebug() << QString::number(qRgb(col.red, col.green, col.blue), 16);
         mPalette.append(qRgb(col.red, col.green, col.blue));
     }
     return true;
@@ -257,33 +279,30 @@ void MainUI::on_romOpenButton_clicked()
     QString fileName = QFileDialog::getOpenFileName(this,
           tr("Select ROM"), QString(), tr("SNES ROM (*.smc *.sfc)"));
     if (!fileName.isNull())
-        romFile = fileName;
+        openRom(fileName);
 }
 
-void MainUI::on_pushButton_3_clicked()
-{
-    extractPalette();
-    if (!extractTiles())
-        return;
-    createImageList();
-    buildScene();
-    buildPaletteScene();
-}
 
 void MainUI::on_headerButtonGroup_clicked(int)
 {
-    currentSet.header = ui->headerRadioButton->isChecked();
+    romHasHeader = ui->headerRadioButton->isChecked();
 }
 
 void MainUI::updateUiWithPreset()
 {
-    ui->headerRadioButton->setChecked(currentSet.header);
+    ui->headerRadioButton->setChecked(romHasHeader);
     ui->loRomRadioButton->setChecked(currentSet.romType == "LoROM");
-    if (currentSet.tilesLocation != 0)
-        ui->snesAddrLineEdit->setText(QString::number(currentSet.tilesLocation, 16));
+    if (currentSet.SNESTilesLocation != 0)
+    {
+        ui->tilesSNESRadioButton->toggle();
+        ui->snesAddrLineEdit->setText(QString::number(currentSet.SNESTilesLocation, 16));       
+    }
     else
-        ui->pcAddrLineEdit->setText(QString::number(currentSet.pcTilesLocation, 16));
-    ui->sizeLineEdit->setText(QString::number(currentSet.size));
+    {
+        ui->tilesPCRadioButton->toggle();
+        ui->pcAddrLineEdit->setText(QString::number(currentSet.pcTilesLocation, 16));   
+    }
+    ui->sizeLineEdit->setText(QString::number(currentSet.length));
     ui->compressionComboBox->setCurrentText(currentSet.compression);
     switch (currentSet.bpp)
     {
@@ -293,5 +312,134 @@ void MainUI::updateUiWithPreset()
             ui->bpp3RadioButton->setChecked(true);
         case 4:
             ui->bpp4RadioButton->setChecked(true);
+    }
+    if (currentSet.SNESPaletteLocation != 0)
+    {
+        ui->paletteSNESLocationRadioButton->toggle();
+        ui->paletteSNESLocationLineEdit->setText(QString::number(currentSet.SNESPaletteLocation, 16));
+    }
+    if (currentSet.pcPaletteLocation != 0)
+    {
+        ui->palettePCLocationRadioButton->toggle();
+        ui->palettePCLocationLineEdit->setText(QString::number(currentSet.pcPaletteLocation, 16));
+    }
+}
+
+void MainUI::on_paletteSNESLocationRadioButton_toggled(bool checked)
+{
+    ui->paletteSNESLocationLineEdit->setEnabled(checked);
+}
+
+void MainUI::on_palettePCLocationRadioButton_toggled(bool checked)
+{
+    ui->palettePCLocationLineEdit->setEnabled(checked);
+}
+
+
+void MainUI::on_refreshPushButton_clicked()
+{
+    updatePresetWithUi();
+    if (currentSet.SNESPaletteLocation == 0 && currentSet.pcPaletteLocation == 0)
+        setGrayscalePalette(qPow(2, currentSet.bpp));
+    else
+        extractPalette();
+    if (!extractTiles())
+        return;
+    createImageList();
+    buildTileScene();
+    buildPaletteScene();
+}
+
+void MainUI::on_paletteGrayRadioButton_toggled(bool checked)
+{
+    if (checked == true)
+    {
+        currentSet.SNESPaletteLocation = 0;
+        currentSet.pcPaletteLocation = 0;
+    }
+}
+
+void MainUI::on_tilesSNESRadioButton_toggled(bool checked)
+{
+    ui->snesAddrLineEdit->setEnabled(checked);
+}
+
+void MainUI::on_tilesPCRadioButton_toggled(bool checked)
+{
+    ui->pcAddrLineEdit->setEnabled(checked);
+}
+
+void MainUI::openRom(QString rom)
+{
+    romInfo = ROMInfo(rom);
+    romHasHeader = romInfo.hasHeader;
+    if (romHasHeader)
+        ui->headerRadioButton->toggle();
+    else
+        ui->noHeaderRadioButton->toggle();
+    if (romInfo.romType == "LoROM")
+        ui->loRomRadioButton->toggle();
+    else
+        ui->hiRomRadioButton->toggle();
+    ui->romFileLineEdit->setText(rom);
+    ui->statusBar->showMessage(QFileInfo(rom).baseName() + " loaded - " + romInfo.romType + " - Rom title is : " + romInfo.romTitle);
+    romFile = rom;
+}
+
+/* We use only thing that affect the set, rom header is not really important here for example */
+/* Tile arrangement is not updated here */
+
+void MainUI::updatePresetWithUi()
+{
+    currentSet.SNESTilesLocation = 0;
+    currentSet.pcTilesLocation = 0;
+    bool ok;
+    if (ui->tilesSNESRadioButton->isChecked())
+        currentSet.SNESTilesLocation = ui->snesAddrLineEdit->text().toUInt(&ok, 16);
+    else
+        currentSet.pcTilesLocation = ui->pcAddrLineEdit->text().toUInt(&ok, 16);
+    currentSet.length = ui->sizeLineEdit->text().toUInt();
+    if (ui->bpp2RadioButton->isChecked())
+        currentSet.bpp = 2;
+    if (ui->bpp3RadioButton->isChecked())
+        currentSet.bpp = 3;
+    if (ui->bpp4RadioButton->isChecked())
+        currentSet.bpp = 4;
+
+    currentSet.compression = ui->compressionComboBox->currentText();
+
+    currentSet.SNESPaletteLocation = 0;
+    currentSet.pcPaletteLocation = 0;
+    if (ui->paletteSNESLocationRadioButton->isChecked())
+        currentSet.SNESPaletteLocation = ui->paletteSNESLocationLineEdit->text().toUInt(&ok, 16);
+    if (ui->palettePCLocationRadioButton->isChecked())
+        currentSet.pcPaletteLocation = ui->palettePCLocationLineEdit->text().toUInt(&ok, 16);
+}
+
+void MainUI::on_tilesPerRowSpinBox_valueChanged(int arg1)
+{
+    tilesPerRow = arg1;
+}
+
+void MainUI::on_horizontalSlider_valueChanged(int value)
+{
+    tilesZoom = value;
+    buildTileScene();
+}
+
+void MainUI::on_tilesPerRowSpinBox_editingFinished()
+{
+    tilesPerRow = ui->tilesPerRowSpinBox->value();
+    buildTileScene();
+}
+
+void MainUI::on_presetOpenPushButton_clicked()
+{
+    QString presetFile = QFileDialog::getOpenFileName(this,
+                                tr("Select preset"), QString(), tr("stk (*.stk)"));
+    if (!presetFile.isEmpty())
+    {
+        if (currentSet.load(presetFile))
+            updateUiWithPreset();
     }
 }

@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include "c_stuff/tile.h"
 #include "compressioninterface.h"
+#include "rominfo.h"
 #include "tilepreset.h"
 #include <QGraphicsScene>
 
@@ -22,14 +23,37 @@ public:
 private slots:
     void on_romOpenButton_clicked();
 
-    void on_pushButton_3_clicked();
     void on_headerButtonGroup_clicked(int);
+
+    void on_paletteSNESLocationRadioButton_toggled(bool checked);
+
+    void on_palettePCLocationRadioButton_toggled(bool checked);
+
+    void on_refreshPushButton_clicked();
+
+    void on_paletteGrayRadioButton_toggled(bool checked);
+
+    void on_tilesSNESRadioButton_toggled(bool checked);
+
+    void on_tilesPCRadioButton_toggled(bool checked);
+
+    void on_tilesPerRowSpinBox_valueChanged(int arg1);
+
+    void on_horizontalSlider_valueChanged(int value);
+
+    void on_tilesPerRowSpinBox_editingFinished();
+
+    void on_presetOpenPushButton_clicked();
 
 private:
     Ui::MainUI      *ui;
     TilePreset      currentSet;
 
+    ROMInfo         romInfo;
     QString         romFile;
+    unsigned int    tilesZoom;
+    unsigned int    tilesPerRow;
+    bool            romHasHeader;
     QGraphicsScene  *tileScene;
     QGraphicsScene  *palScene;
     QList<tile8>    rawTiles;
@@ -39,12 +63,14 @@ private:
 
     QMap<QString, CompressionInterface*>    availableCompressions;
 
+    void    openRom(QString rom);
+    void    updatePresetWithUi();
     void    updateUiWithPreset();
     bool    extractTiles();
     void    createImageList();
-    void    buildScene();
+    void    buildTileScene();
     void    buildPaletteScene();
-    void    setGrayscalePalette();
+    void    setGrayscalePalette(unsigned int paletteSize = 16);
     bool    loadCompressionPlugins();
     bool    extractPalette();
 };
