@@ -17,9 +17,10 @@ TilePreset::TilePreset()
     tilesPerRow = 0;
     pcPaletteLocation = 0;
     SNESPaletteLocation = 0;
+    paletteNoZeroColor = false;
 }
 
-bool TilePreset::save(QString file)
+bool TilePreset::save(const QString &file)
 {
     QSettings pFile(file, QSettings::IniFormat);
 
@@ -40,11 +41,12 @@ bool TilePreset::save(QString file)
 
     pFile.setValue("palette/pc_location", QString::number(pcPaletteLocation, 16));
     pFile.setValue("palette/snes_location", QString::number(SNESPaletteLocation, 16));
+    pFile.setValue("palette/nozerocolor", paletteNoZeroColor);
 
     return true;
 }
 
-bool TilePreset::load(QString file)
+bool TilePreset::load(const QString& file)
 {
     QSettings   pFile(file, QSettings::IniFormat);
 
@@ -61,12 +63,13 @@ bool TilePreset::load(QString file)
     SNESTilesLocation = pFile.value("tiles/snes_location").toString().toUInt(&ok, 16);
     length = pFile.value("tiles/length").toInt();
     bpp = pFile.value("tiles/bpp").toInt();
-    compression = pFile.value("tiles/bpp").toString();
+    compression = pFile.value("tiles/compression").toString();
 
-    tilesPerRow = pFile.value("tiles_arrrangement/tiles_per_row").toInt();
+    tilesPerRow = pFile.value("tiles_arrangement/tiles_per_row").toInt();
 
     pcPaletteLocation = pFile.value("palette/pc_location").toString().toUInt(&ok, 16);
     SNESPaletteLocation = pFile.value("palette/snes_location").toString().toUInt(&ok, 16);
+    paletteNoZeroColor = pFile.value("palette/nozerocolor").toBool();
 
     return true;
 }

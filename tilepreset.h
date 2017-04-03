@@ -8,19 +8,20 @@ class TilePreset
 public:
     TilePreset();
 
-    bool    save(QString file);
-    bool    load(QString file);
+    bool    save(const QString& file);
+    bool    load(const QString& file);
 
     QString name;
     QString romName;
     QString romType;
 
-    unsigned int SNESTilesLocation;
-    unsigned int pcTilesLocation;
-    unsigned int SNESPaletteLocation;
-    unsigned int pcPaletteLocation;
-    unsigned int length;
-    unsigned int tilesPerRow;
+    unsigned int    SNESTilesLocation;
+    unsigned int    pcTilesLocation;
+    unsigned int    SNESPaletteLocation;
+    unsigned int    pcPaletteLocation;
+    bool            paletteNoZeroColor;
+    unsigned int    length;
+    unsigned int    tilesPerRow;
 
     unsigned int bpp;
     QString compression;

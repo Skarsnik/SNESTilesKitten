@@ -1,0 +1,21 @@
+[_]
+name=Terranigma PAL - Dark Gaia p1
+
+[rom]
+name=
+type=LoROM
+
+[tiles]
+pc_location=39e2e2
+snes_location=0
+length=28671
+bpp=4
+compression=Terranigma
+
+[tiles_arrangement]
+tiles_per_row=16
+
+[palette]
+pc_location=e560c
+snes_location=0
+nozerocolor=false

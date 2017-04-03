@@ -117,7 +117,7 @@ u8 *Comp::UncompressData( u32 Offset, u32 *Size )
 	//}
 
 	CompBuff = new u8[ *Size ];
-	printf("Comp:UncompressData: Size:%04X\n", *Size );
+    printf("Comp:UncompressData: Size:%04X\n", *Size );
 	
 	//First byte always uncompressed!
 	//printf("Write %02X\n", GetByte(0) );

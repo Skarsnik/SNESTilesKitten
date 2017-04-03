@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>910</width>
-    <height>542</height>
+    <height>550</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -152,8 +152,8 @@ PC locations all assume the rom does not have the SMC header</string>
      <rect>
       <x>10</x>
       <y>50</y>
-      <width>291</width>
-      <height>467</height>
+      <width>295</width>
+      <height>481</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -396,7 +396,7 @@ PC locations all assume the rom does not have the SMC header</string>
              <string>2 bpp</string>
             </property>
             <attribute name="buttonGroup">
-             <string notr="true">buttonGroup_3</string>
+             <string notr="true">paletteGroupButton</string>
             </attribute>
            </widget>
           </item>
@@ -406,7 +406,7 @@ PC locations all assume the rom does not have the SMC header</string>
              <string>3 bpp</string>
             </property>
             <attribute name="buttonGroup">
-             <string notr="true">buttonGroup_3</string>
+             <string notr="true">paletteGroupButton</string>
             </attribute>
            </widget>
           </item>
@@ -416,7 +416,7 @@ PC locations all assume the rom does not have the SMC header</string>
              <string>4 bpp</string>
             </property>
             <attribute name="buttonGroup">
-             <string notr="true">buttonGroup_3</string>
+             <string notr="true">paletteGroupButton</string>
             </attribute>
            </widget>
           </item>
@@ -449,20 +449,42 @@ PC locations all assume the rom does not have the SMC header</string>
           <item>
            <widget class="QRadioButton" name="paletteGrayRadioButton">
             <property name="text">
-             <string>Shade of gray (I don't know where they are)</string>
+             <string>Shade of gray (I don't know where it is)</string>
             </property>
             <property name="checked">
              <bool>true</bool>
             </property>
+            <attribute name="buttonGroup">
+             <string notr="true">buttonGroup</string>
+            </attribute>
            </widget>
           </item>
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_10">
             <item>
+             <spacer name="horizontalSpacer_9">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeType">
+               <enum>QSizePolicy::Fixed</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>30</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
              <widget class="QRadioButton" name="paletteSNESLocationRadioButton">
               <property name="text">
                <string>SNES location :</string>
               </property>
+              <attribute name="buttonGroup">
+               <string notr="true">buttonGroup</string>
+              </attribute>
              </widget>
             </item>
             <item>
@@ -490,10 +512,29 @@ PC locations all assume the rom does not have the SMC header</string>
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_9">
             <item>
+             <spacer name="horizontalSpacer_10">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeType">
+               <enum>QSizePolicy::Fixed</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>30</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
              <widget class="QRadioButton" name="palettePCLocationRadioButton">
               <property name="text">
                <string>PC location :</string>
               </property>
+              <attribute name="buttonGroup">
+               <string notr="true">buttonGroup</string>
+              </attribute>
              </widget>
             </item>
             <item>
@@ -515,6 +556,33 @@ PC locations all assume the rom does not have the SMC header</string>
                </size>
               </property>
              </spacer>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_11">
+            <item>
+             <spacer name="horizontalSpacer_11">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeType">
+               <enum>QSizePolicy::Fixed</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>30</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="paletteNoZeroColorRadioButton">
+              <property name="text">
+               <string>Color 0 is not included</string>
+              </property>
+             </widget>
             </item>
            </layout>
           </item>
@@ -608,8 +676,9 @@ PC locations all assume the rom does not have the SMC header</string>
  <connections/>
  <buttongroups>
   <buttongroup name="headerButtonGroup"/>
-  <buttongroup name="buttonGroup_3"/>
-  <buttongroup name="buttonGroup_2"/>
+  <buttongroup name="paletteGroupButton"/>
   <buttongroup name="tilesLocationButtonGroup"/>
+  <buttongroup name="buttonGroup_2"/>
+  <buttongroup name="buttonGroup"/>
  </buttongroups>
 </ui>

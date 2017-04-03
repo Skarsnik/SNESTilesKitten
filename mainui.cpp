@@ -7,13 +7,15 @@
 #include <QFileDialog>
 #include <QDebug>
 #include <QtMath>
+#include <QDir>
 #include <QGraphicsPixmapItem>
 #include <QPluginLoader>
+#include <QInputDialog>
 #include "c_stuff/rommapping.h"
 #include "c_stuff/palette.h"
 
 /*
- * Nethr4z: for Terranigma you can test this: 39E2E2 (pc offset)
+ * Nethr4z: for Terranigma you can test this: 39E2E2 (pc offset) palette : e560c
  */
 
 MainUI::MainUI(QWidget *parent) :
@@ -31,21 +33,9 @@ MainUI::MainUI(QWidget *parent) :
     ui->palettePCLocationLineEdit->setValidator(hexValid);
     ui->paletteSNESLocationLineEdit->setValidator(hexValid);
 
-    if (1) {
-        romHasHeader = true;
-        currentSet.bpp = 4;
-        currentSet.romType = "LoROM";
-        currentSet.length = 0x86FFF - 0x80000;
-        currentSet.SNESTilesLocation = 0; // 0x10F000;//0x108000; $80000-$86FFF
-        currentSet.pcTilesLocation = 0x80000;
-        currentSet.compression = "None";
-        currentSet.SNESPaletteLocation = 0;
-        currentSet.pcPaletteLocation = 0xDD308;
-        openRom("D:\\Emulation\\Zelda - A Link to the Past\\Zelda - A Link to the Past.smc");
-    }
-
     tilesZoom = 30;
-    tilesPerRow = 8;
+    tilesPerRow = 16;
+
     tileScene = new QGraphicsScene();
     palScene = new QGraphicsScene();
     ui->graphicsView->setScene(tileScene);
@@ -63,7 +53,29 @@ MainUI::MainUI(QWidget *parent) :
     } else {
         qApp->exit(1);
     }
-    updateUiWithPreset();
+    if (1) {
+        /*romHasHeader = true;
+        currentSet.bpp = 4;
+        currentSet.romType = "LoROM";
+        currentSet.length = 0x86FFF - 0x80000;
+        currentSet.SNESTilesLocation = 0; // 0x10F000;//0x108000; $80000-$86FFF
+        currentSet.pcTilesLocation = 0x80000;
+        currentSet.compression = "None";
+        currentSet.SNESPaletteLocation = 0;
+        currentSet.pcPaletteLocation = 0xDD308;
+        currentSet.paletteNoZeroColor = true;
+        currentSet.tilesPerRow = 16;*/
+        openRom("D:\\Emulation\\Zelda - A Link to the Past\\Zelda - A Link to the Past.smc");
+        loadPreset("D:\\Project\\SNESTilesKitten\\Presets\\The legend of Zelda - Link Sprites.stk");
+    }
+    m_settings = new QSettings("skarsnik.nyo.fr", "SNESTilesKitten");
+    if (m_settings->contains("windowGeometry"))
+    {
+        lastPresetDirectory = m_settings->value("lastPresetDirectory").toString();
+        lastROMDirectory = m_settings->value("lastROMDirectory").toString();
+        restoreGeometry(m_settings->value("windowGeometry").toByteArray());
+        restoreState(m_settings->value("windowState").toByteArray());
+    }
 }
 
 MainUI::~MainUI()
@@ -259,11 +271,15 @@ bool MainUI::extractPalette()
 
     plop.open(QIODevice::ReadOnly);
     plop.seek(filePos);
-    unsigned int palette_size = qPow(2, currentSet.bpp) - 1;
+    unsigned int palette_size = qPow(2, currentSet.bpp);// - 1;
     QByteArray ab = plop.read(palette_size * 2);
     qDebug() << ab;
     char* data = ab.data();
-    mPalette.append(qRgb(0x99, 0x99, 0x99));
+    if (currentSet.paletteNoZeroColor)
+    {
+        mPalette.append(qRgb(0x99, 0x99, 0x99));
+        palette_size--;
+    }
     s_palette* raw_pal = extract_palette(data, 0, palette_size);
     for (unsigned int i = 0; i < palette_size; i++)
     {
@@ -274,10 +290,18 @@ bool MainUI::extractPalette()
     return true;
 }
 
+void MainUI::closeEvent(QCloseEvent *event)
+{
+    m_settings->setValue("lastROMDirectory", lastROMDirectory);
+    m_settings->setValue("lastPresetDirectory", lastPresetDirectory);
+    m_settings->setValue("windowState", saveState());
+    m_settings->setValue("windowGeometry", saveGeometry());
+}
+
 void MainUI::on_romOpenButton_clicked()
 {
     QString fileName = QFileDialog::getOpenFileName(this,
-          tr("Select ROM"), QString(), tr("SNES ROM (*.smc *.sfc)"));
+          tr("Select ROM"), lastROMDirectory, tr("SNES ROM (*.smc *.sfc)"));
     if (!fileName.isNull())
         openRom(fileName);
 }
@@ -313,6 +337,8 @@ void MainUI::updateUiWithPreset()
         case 4:
             ui->bpp4RadioButton->setChecked(true);
     }
+    ui->tilesPerRowSpinBox->setValue(currentSet.tilesPerRow);
+    tilesPerRow = currentSet.tilesPerRow;
     if (currentSet.SNESPaletteLocation != 0)
     {
         ui->paletteSNESLocationRadioButton->toggle();
@@ -323,6 +349,22 @@ void MainUI::updateUiWithPreset()
         ui->palettePCLocationRadioButton->toggle();
         ui->palettePCLocationLineEdit->setText(QString::number(currentSet.pcPaletteLocation, 16));
     }
+    ui->paletteNoZeroColorRadioButton->setChecked(currentSet.paletteNoZeroColor);
+}
+
+void MainUI::updateGTileView()
+{
+    if (currentSet.SNESPaletteLocation == 0 && currentSet.pcPaletteLocation == 0)
+        setGrayscalePalette(qPow(2, currentSet.bpp));
+    else
+        extractPalette();
+    if (!extractTiles()) {
+        ui->statusBar->showMessage("Error extracting tiles");
+        return;
+    }
+    createImageList();
+    buildTileScene();
+    buildPaletteScene();
 }
 
 void MainUI::on_paletteSNESLocationRadioButton_toggled(bool checked)
@@ -339,15 +381,7 @@ void MainUI::on_palettePCLocationRadioButton_toggled(bool checked)
 void MainUI::on_refreshPushButton_clicked()
 {
     updatePresetWithUi();
-    if (currentSet.SNESPaletteLocation == 0 && currentSet.pcPaletteLocation == 0)
-        setGrayscalePalette(qPow(2, currentSet.bpp));
-    else
-        extractPalette();
-    if (!extractTiles())
-        return;
-    createImageList();
-    buildTileScene();
-    buildPaletteScene();
+    updateGTileView();
 }
 
 void MainUI::on_paletteGrayRadioButton_toggled(bool checked)
@@ -356,7 +390,10 @@ void MainUI::on_paletteGrayRadioButton_toggled(bool checked)
     {
         currentSet.SNESPaletteLocation = 0;
         currentSet.pcPaletteLocation = 0;
+        ui->paletteNoZeroColorRadioButton->setEnabled(false);
     }
+    else
+        ui->paletteNoZeroColorRadioButton->setEnabled(true);
 }
 
 void MainUI::on_tilesSNESRadioButton_toggled(bool checked)
@@ -384,6 +421,22 @@ void MainUI::openRom(QString rom)
     ui->romFileLineEdit->setText(rom);
     ui->statusBar->showMessage(QFileInfo(rom).baseName() + " loaded - " + romInfo.romType + " - Rom title is : " + romInfo.romTitle);
     romFile = rom;
+    lastROMDirectory = QFileInfo(rom).dir().absolutePath();
+}
+
+bool MainUI::loadPreset(const QString& presetFile)
+{
+    if (currentSet.load(presetFile)) {
+        updateUiWithPreset();
+        lastPresetDirectory = QFileInfo(presetFile).dir().absolutePath();
+        ui->statusBar->showMessage("Preset file " + QFileInfo(presetFile).fileName() + " loaded - " + currentSet.name);
+        if (!romFile.isEmpty())
+            updateGTileView();
+        return true;
+    } else {
+        qDebug() << "Error loading preset";
+        return false;
+    }
 }
 
 /* We use only thing that affect the set, rom header is not really important here for example */
@@ -414,6 +467,8 @@ void MainUI::updatePresetWithUi()
         currentSet.SNESPaletteLocation = ui->paletteSNESLocationLineEdit->text().toUInt(&ok, 16);
     if (ui->palettePCLocationRadioButton->isChecked())
         currentSet.pcPaletteLocation = ui->palettePCLocationLineEdit->text().toUInt(&ok, 16);
+    if (ui->paletteNoZeroColorRadioButton->isEnabled())
+        currentSet.paletteNoZeroColor = ui->paletteNoZeroColorRadioButton->isChecked();
 }
 
 void MainUI::on_tilesPerRowSpinBox_valueChanged(int arg1)
@@ -436,10 +491,33 @@ void MainUI::on_tilesPerRowSpinBox_editingFinished()
 void MainUI::on_presetOpenPushButton_clicked()
 {
     QString presetFile = QFileDialog::getOpenFileName(this,
-                                tr("Select preset"), QString(), tr("stk (*.stk)"));
+                                tr("Select preset"), lastPresetDirectory, tr("stk (*.stk)"));
     if (!presetFile.isEmpty())
     {
-        if (currentSet.load(presetFile))
-            updateUiWithPreset();
+        loadPreset(presetFile);
+    }
+}
+
+void MainUI::on_presetSavePushButton_clicked()
+{
+    bool    ok;
+    currentSet.tilesPerRow = tilesPerRow;
+    QString presetName;
+    if (!currentSet.name.isEmpty())
+        presetName = currentSet.name;
+    else
+        presetName = romInfo.romTitle;
+    presetName = QInputDialog::getText(this, tr("Preset name"), tr("Preset name"), QLineEdit::Normal, presetName, &ok);
+    if (ok) {
+        QString presetFile = QFileDialog::getSaveFileName(this, tr("Preset file"), lastPresetDirectory + "/" + presetName + ".stk", tr("stk (*.stk)"));
+        if (!presetFile.isEmpty()) {
+            currentSet.name = presetName;
+            if (currentSet.save(presetFile)) {
+                lastPresetDirectory = QFileInfo(presetFile).dir().absolutePath();
+                ui->statusBar->showMessage("Preset file saved properly");
+            } else {
+                qDebug() << "Error saving preset";
+            }
+        }
     }
 }

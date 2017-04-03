@@ -7,6 +7,7 @@
 #include "rominfo.h"
 #include "tilepreset.h"
 #include <QGraphicsScene>
+#include <QSettings>
 
 namespace Ui {
 class MainUI;
@@ -45,9 +46,14 @@ private slots:
 
     void on_presetOpenPushButton_clicked();
 
+    void on_presetSavePushButton_clicked();
+
 private:
     Ui::MainUI      *ui;
     TilePreset      currentSet;
+    QSettings*      m_settings;
+    QString         lastPresetDirectory;
+    QString         lastROMDirectory;
 
     ROMInfo         romInfo;
     QString         romFile;
@@ -64,8 +70,11 @@ private:
     QMap<QString, CompressionInterface*>    availableCompressions;
 
     void    openRom(QString rom);
+    bool    loadPreset(const QString &presetFile);
     void    updatePresetWithUi();
     void    updateUiWithPreset();
+
+    void    updateGTileView();
     bool    extractTiles();
     void    createImageList();
     void    buildTileScene();
@@ -73,6 +82,8 @@ private:
     void    setGrayscalePalette(unsigned int paletteSize = 16);
     bool    loadCompressionPlugins();
     bool    extractPalette();
+
+    void    closeEvent(QCloseEvent* event);
 };
 
 #endif // MAINUI_H
