@@ -48,12 +48,15 @@ private slots:
 
     void on_presetSavePushButton_clicked();
 
+    void on_pngExportPushButton_clicked();
+
 private:
     Ui::MainUI      *ui;
     TilePreset      currentSet;
     QSettings*      m_settings;
     QString         lastPresetDirectory;
     QString         lastROMDirectory;
+    QString         lastPNGDirectory;
 
     ROMInfo         romInfo;
     QString         romFile;

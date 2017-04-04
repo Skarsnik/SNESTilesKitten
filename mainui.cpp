@@ -13,10 +13,8 @@
 #include <QInputDialog>
 #include "c_stuff/rommapping.h"
 #include "c_stuff/palette.h"
+#include "pngexportimport.h"
 
-/*
- * Nethr4z: for Terranigma you can test this: 39E2E2 (pc offset) palette : e560c
- */
 
 MainUI::MainUI(QWidget *parent) :
     QMainWindow(parent),
@@ -54,17 +52,6 @@ MainUI::MainUI(QWidget *parent) :
         qApp->exit(1);
     }
     if (1) {
-        /*romHasHeader = true;
-        currentSet.bpp = 4;
-        currentSet.romType = "LoROM";
-        currentSet.length = 0x86FFF - 0x80000;
-        currentSet.SNESTilesLocation = 0; // 0x10F000;//0x108000; $80000-$86FFF
-        currentSet.pcTilesLocation = 0x80000;
-        currentSet.compression = "None";
-        currentSet.SNESPaletteLocation = 0;
-        currentSet.pcPaletteLocation = 0xDD308;
-        currentSet.paletteNoZeroColor = true;
-        currentSet.tilesPerRow = 16;*/
         openRom("D:\\Emulation\\Zelda - A Link to the Past\\Zelda - A Link to the Past.smc");
         loadPreset("D:\\Project\\SNESTilesKitten\\Presets\\The legend of Zelda - Link Sprites.stk");
     }
@@ -73,6 +60,7 @@ MainUI::MainUI(QWidget *parent) :
     {
         lastPresetDirectory = m_settings->value("lastPresetDirectory").toString();
         lastROMDirectory = m_settings->value("lastROMDirectory").toString();
+        lastPNGDirectory = m_settings->value("lastPNGDirectory").toString();
         restoreGeometry(m_settings->value("windowGeometry").toByteArray());
         restoreState(m_settings->value("windowState").toByteArray());
     }
@@ -290,10 +278,12 @@ bool MainUI::extractPalette()
     return true;
 }
 
+
 void MainUI::closeEvent(QCloseEvent *event)
 {
     m_settings->setValue("lastROMDirectory", lastROMDirectory);
     m_settings->setValue("lastPresetDirectory", lastPresetDirectory);
+    m_settings->setValue("lastPNGDirectory", lastPNGDirectory);
     m_settings->setValue("windowState", saveState());
     m_settings->setValue("windowGeometry", saveGeometry());
 }
@@ -516,8 +506,27 @@ void MainUI::on_presetSavePushButton_clicked()
                 lastPresetDirectory = QFileInfo(presetFile).dir().absolutePath();
                 ui->statusBar->showMessage("Preset file saved properly");
             } else {
+                ui->statusBar->showMessage("Error saving preset");
                 qDebug() << "Error saving preset";
             }
         }
+    }
+}
+
+
+void MainUI::on_pngExportPushButton_clicked()
+{
+    unsigned int piko = currentSet.pcTilesLocation == 0 ? currentSet.SNESTilesLocation : currentSet.pcPaletteLocation;
+    QString exportName = romInfo.romTitle + "_" + QString::number(piko, 16);
+    if (!currentSet.name.isEmpty())
+        exportName = currentSet.name;
+    QString pngFile = QFileDialog::getSaveFileName(this, tr("Exported PNG File"), lastPNGDirectory + "/" + exportName + ".png", tr("PNG file, (*.png)"));
+    if (!pngFile.isEmpty())
+    {
+        QImage img = mergeTilesToImage(rawTiles, mPalette, tilesPerRow);
+        if (saveToPNG(img, pngFile))
+            ui->statusBar->showMessage("Export to " + pngFile + " succesfull");
+        else
+            ui->statusBar->showMessage("Error while exporting to " + pngFile);
     }
 }

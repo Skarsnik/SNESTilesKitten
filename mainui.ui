@@ -14,9 +14,9 @@
    <string>SNESTileKitten</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="QPushButton" name="pushButton_2">
+   <widget class="QPushButton" name="pngExportPushButton">
     <property name="enabled">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
     <property name="geometry">
      <rect>
@@ -675,10 +675,10 @@ PC locations all assume the rom does not have the SMC header</string>
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="headerButtonGroup"/>
-  <buttongroup name="paletteGroupButton"/>
-  <buttongroup name="tilesLocationButtonGroup"/>
   <buttongroup name="buttonGroup_2"/>
+  <buttongroup name="tilesLocationButtonGroup"/>
   <buttongroup name="buttonGroup"/>
+  <buttongroup name="paletteGroupButton"/>
+  <buttongroup name="headerButtonGroup"/>
  </buttongroups>
 </ui>

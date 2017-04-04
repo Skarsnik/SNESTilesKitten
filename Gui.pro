@@ -22,7 +22,8 @@ SOURCES += main.cpp\
     c_stuff/palette.c \
     graphicspalettecoloritem.cpp \
     rominfo.cpp \
-    presetsavedialog.cpp
+    presetsavedialog.cpp \
+    pngexportimport.cpp
 
 HEADERS  += mainui.h \
     tilepreset.h \
@@ -33,7 +34,8 @@ HEADERS  += mainui.h \
     c_stuff/palette.h \
     graphicspalettecoloritem.h \
     rominfo.h \
-    presetsavedialog.h
+    presetsavedialog.h \
+    pngexportimport.h
 
 FORMS    += mainui.ui \
     presetsavedialog.ui
