@@ -15,11 +15,11 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainui.cpp \
     tilepreset.cpp \
-    c_stuff/tile.c \
-    c_stuff/mapping_hirom.c \
-    c_stuff/mapping_lorom.c \
-    c_stuff/rommapping.c \
-    c_stuff/palette.c \
+    lowlevelstuff/src/tile.c \
+    lowlevelstuff/src/mapping_hirom.c \
+    lowlevelstuff/src/mapping_lorom.c \
+    lowlevelstuff/src/rommapping.c \
+    lowlevelstuff/src/palette.c \
     graphicspalettecoloritem.cpp \
     rominfo.cpp \
     presetsavedialog.cpp \
@@ -27,11 +27,11 @@ SOURCES += main.cpp\
 
 HEADERS  += mainui.h \
     tilepreset.h \
-    c_stuff/tile.h \
-    c_stuff/rommapping.h \
+    lowlevelstuff/src/tile.h \
+    lowlevelstuff/src/rommapping.h \
     compressioninterface.h \
     compressioninfo.h \
-    c_stuff/palette.h \
+    lowlevelstuff/src/palette.h \
     graphicspalettecoloritem.h \
     rominfo.h \
     presetsavedialog.h \

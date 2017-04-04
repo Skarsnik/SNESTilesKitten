@@ -11,8 +11,8 @@
 #include <QGraphicsPixmapItem>
 #include <QPluginLoader>
 #include <QInputDialog>
-#include "c_stuff/rommapping.h"
-#include "c_stuff/palette.h"
+#include "lowlevelstuff/src/rommapping.h"
+#include "lowlevelstuff/src/palette.h"
 #include "pngexportimport.h"
 
 
@@ -268,7 +268,7 @@ bool MainUI::extractPalette()
         mPalette.append(qRgb(0x99, 0x99, 0x99));
         palette_size--;
     }
-    s_palette* raw_pal = extract_palette(data, 0, palette_size);
+    r_palette* raw_pal = extract_palette(data, 0, palette_size);
     for (unsigned int i = 0; i < palette_size; i++)
     {
         m_color col = raw_pal->colors[i];

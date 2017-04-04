@@ -3,7 +3,7 @@
 
 
 #include <QImage>
-#include <c_stuff/tile.h>
+#include <lowlevelstuff/src/tile.h>
 
 QImage  mergeTilesToImage(const QList<tile8> tiles, const QVector<QRgb> &palette, const unsigned int tilesPerRow);
 bool    saveToPNG(const QImage& image, QString path);

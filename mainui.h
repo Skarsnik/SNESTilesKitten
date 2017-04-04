@@ -2,7 +2,7 @@
 #define MAINUI_H
 
 #include <QMainWindow>
-#include "c_stuff/tile.h"
+#include "lowlevelstuff/src/tile.h"
 #include "compressioninterface.h"
 #include "rominfo.h"
 #include "tilepreset.h"
