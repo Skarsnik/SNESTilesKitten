@@ -40,7 +40,7 @@ private slots:
 
     void on_tilesPerRowSpinBox_valueChanged(int arg1);
 
-    void on_horizontalSlider_valueChanged(int value);
+    void on_tileZoomHorizontalSlider_valueChanged(int value);
 
     void on_tilesPerRowSpinBox_editingFinished();
 

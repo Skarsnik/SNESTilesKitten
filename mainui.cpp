@@ -171,6 +171,7 @@ void MainUI::buildTileScene()
             i = 0;
         }
     }
+    tileScene->setSceneRect(tileScene->itemsBoundingRect());
 }
 
 void MainUI::buildPaletteScene()
@@ -466,7 +467,7 @@ void MainUI::on_tilesPerRowSpinBox_valueChanged(int arg1)
     tilesPerRow = arg1;
 }
 
-void MainUI::on_horizontalSlider_valueChanged(int value)
+void MainUI::on_tileZoomHorizontalSlider_valueChanged(int value)
 {
     tilesZoom = value;
     buildTileScene();
