@@ -1,5 +1,5 @@
-#include "alttpcompression.h"
-#include "alttpstddecompress.h"
+#include "alttpstdcompression.h"
+#include "../lowlevelstuff/src/compressions/alttpcompression.h"
 #include <QDebug>
 
 

@@ -12,11 +12,11 @@ CONFIG += plugin
 
 DESTDIR = ../plugins
 
-SOURCES += alttpcompression.cpp \
-    alttpstddecompress.c
+SOURCES += alttpstdcompression.cpp \
+    ../lowlevelstuff/src/compressions/alttpcompression.c
 
-HEADERS += alttpcompression.h \
-    alttpstddecompress.h
+HEADERS += alttpstdcompression.h \
+    ../lowlevelstuff/src/compressions/alttpcompression.h
 
 DISTFILES += alttpcompression.json
 
