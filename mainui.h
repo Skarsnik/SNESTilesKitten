@@ -4,7 +4,7 @@
 #include <QMainWindow>
 #include "lowlevelstuff/src/tile.h"
 #include "compressioninterface.h"
-#include "rominfo.h"
+#include "romdataengine.h"
 #include "tilepreset.h"
 #include <QGraphicsScene>
 #include <QSettings>
@@ -58,13 +58,14 @@ private:
     QString         lastROMDirectory;
     QString         lastPNGDirectory;
 
-    ROMInfo         romInfo;
     QString         romFile;
     unsigned int    tilesZoom;
     unsigned int    tilesPerRow;
     bool            romHasHeader;
     QGraphicsScene  *tileScene;
     QGraphicsScene  *palScene;
+    ROMDataEngine   dataEngine;
+
     QList<tile8>    rawTiles;
     QList<QImage>   images;
     char*           rawData;

@@ -44,7 +44,7 @@ MainUI::MainUI(QWidget *parent) :
     connect(ui->headerButtonGroup, SIGNAL(buttonClicked(int)), this, SLOT(on_headerButtonGroup_clicked(int)));
     if (loadCompressionPlugins())
     {
-        foreach(const QString& key, availableCompressions.keys())
+        foreach(const QString& key, dataEngine.availableCompressions().keys())
         {
             ui->compressionComboBox->addItem(key);
         }
@@ -85,46 +85,10 @@ void    show_tile8(tile8 t)
 
 bool MainUI::extractTiles()
 {
-    QFile romFile(romFile);
-    uint    filePos = 0;
-    enum rom_type rType = HiROM;
-    unsigned int size = currentSet.length;
-
-    if (currentSet.romType == "LoROM")
-        rType = LoROM;
-    romFile.open(QIODevice::ReadOnly);
-    if (currentSet.SNESTilesLocation != 0) {
-        filePos = rommapping_snes_to_pc(currentSet.SNESTilesLocation, rType, romHasHeader);
-        if (filePos == -1)
-        {
-          qDebug() << rommapping_error_text;
-          return false;
-        }
-    } else {
-        qDebug() << "direct file location";
-        filePos = currentSet.pcTilesLocation;
-        if (romHasHeader)
-            filePos += 0x200;
-    }
-
-    qDebug() << "Location" << QString::number(filePos, 16);
-    romFile.seek(filePos);
-    QByteArray qdata = romFile.read(currentSet.length);
-    char*   data = qdata.data();
-    QString compressionSelected = currentSet.compression;
-    if (compressionSelected != "None") {
-        qDebug() << "Using " << compressionSelected << " compression";
-        data = availableCompressions[compressionSelected]->unCompress(compressionSelected, data, 0, &size);
-        if (data == NULL)
-            return false;
-    }
-    rawTiles.clear();
-    qDebug() << "Size : " << size;
-    for (unsigned int tilePos = 0; tilePos < size; tilePos += currentSet.bpp * 8) {
-        tile8   newTile = unpack_bpp_tile(data, tilePos, currentSet.bpp);
-        rawTiles.append(newTile);
-    }
-    return true;
+    dataEngine.overrideHeaderInfo = true;
+    dataEngine.overridenHeaderInfo = romHasHeader;
+    rawTiles = dataEngine.extractTiles(currentSet);
+    return !rawTiles.isEmpty();
 }
 
 void MainUI::createImageList()
@@ -222,61 +186,13 @@ bool MainUI::loadCompressionPlugins()
     }
 #endif
     pluginsDir.cd("plugins");
-    foreach (QString fileName, pluginsDir.entryList(QDir::Files)) {
-        if (!fileName.contains(QRegExp(".*\\.(dll|so)$")))
-           continue;
-        QPluginLoader pluginLoader(pluginsDir.absoluteFilePath(fileName));
-        QObject *plugin = pluginLoader.instance();
-        if (plugin) {
-            CompressionInterface*   ci = qobject_cast<CompressionInterface *>(plugin);
-            if (ci) {
-                qDebug() << "Loaded " << fileName;
-                foreach(CompressionInfo info, ci->compressionList()) {
-                    qDebug() << "  " << info.name << " : " << info.shortDescription;
-                    availableCompressions[info.name] = ci;
-                }
-            }
-            else
-            {
-                qCritical() << "Loaded pluging(" << fileName << ")is not a compression plugin";
-                return false;
-            }
-        }
-        else {
-            qCritical() << "Can't load " << fileName;
-            return false;
-        }
-    }
-    return true;
+    return dataEngine.loadCompressionPlugins(pluginsDir);
 }
 
 bool MainUI::extractPalette()
 {
-    mPalette.clear();
-    QFile plop(romFile);
-    unsigned filePos = currentSet.pcPaletteLocation;
-    if (romHasHeader)
-        filePos += 0x200;
-
-    plop.open(QIODevice::ReadOnly);
-    plop.seek(filePos);
-    unsigned int palette_size = qPow(2, currentSet.bpp);// - 1;
-    QByteArray ab = plop.read(palette_size * 2);
-    qDebug() << ab;
-    char* data = ab.data();
-    if (currentSet.paletteNoZeroColor)
-    {
-        mPalette.append(qRgb(0x99, 0x99, 0x99));
-        palette_size--;
-    }
-    r_palette* raw_pal = extract_palette(data, 0, palette_size);
-    for (unsigned int i = 0; i < palette_size; i++)
-    {
-        m_color col = raw_pal->colors[i];
-        qDebug() << QString::number(qRgb(col.red, col.green, col.blue), 16);
-        mPalette.append(qRgb(col.red, col.green, col.blue));
-    }
-    return true;
+    mPalette = dataEngine.extractPalette(currentSet);
+    return !mPalette.isEmpty();
 }
 
 
@@ -399,7 +315,8 @@ void MainUI::on_tilesPCRadioButton_toggled(bool checked)
 
 void MainUI::openRom(QString rom)
 {
-    romInfo = ROMInfo(rom);
+    dataEngine.setRomFile(rom);
+    ROMInfo& romInfo = dataEngine.romInfo;
     romHasHeader = romInfo.hasHeader;
     if (romHasHeader)
         ui->headerRadioButton->toggle();
@@ -413,6 +330,7 @@ void MainUI::openRom(QString rom)
     ui->statusBar->showMessage(QFileInfo(rom).baseName() + " loaded - " + romInfo.romType + " - Rom title is : " + romInfo.romTitle);
     romFile = rom;
     lastROMDirectory = QFileInfo(rom).dir().absolutePath();
+
 }
 
 bool MainUI::loadPreset(const QString& presetFile)
@@ -497,7 +415,7 @@ void MainUI::on_presetSavePushButton_clicked()
     if (!currentSet.name.isEmpty())
         presetName = currentSet.name;
     else
-        presetName = romInfo.romTitle;
+        presetName = dataEngine.romInfo.romTitle;
     presetName = QInputDialog::getText(this, tr("Preset name"), tr("Preset name"), QLineEdit::Normal, presetName, &ok);
     if (ok) {
         QString presetFile = QFileDialog::getSaveFileName(this, tr("Preset file"), lastPresetDirectory + "/" + presetName + ".stk", tr("stk (*.stk)"));
@@ -518,7 +436,7 @@ void MainUI::on_presetSavePushButton_clicked()
 void MainUI::on_pngExportPushButton_clicked()
 {
     unsigned int piko = currentSet.pcTilesLocation == 0 ? currentSet.SNESTilesLocation : currentSet.pcPaletteLocation;
-    QString exportName = romInfo.romTitle + "_" + QString::number(piko, 16);
+    QString exportName = dataEngine.romInfo.romTitle + "_" + QString::number(piko, 16);
     if (!currentSet.name.isEmpty())
         exportName = currentSet.name;
     QString pngFile = QFileDialog::getSaveFileName(this, tr("Exported PNG File"), lastPNGDirectory + "/" + exportName + ".png", tr("PNG file, (*.png)"));

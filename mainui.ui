@@ -544,9 +544,9 @@ PC locations all assume the rom does not have the SMC header</string>
            </spacer>
           </item>
           <item>
-           <widget class="QPushButton" name="pushButton_3">
+           <widget class="QPushButton" name="pngImportpushButton">
             <property name="enabled">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <property name="text">
              <string>Replace with PNG</string>
