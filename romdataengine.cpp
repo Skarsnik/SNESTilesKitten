@@ -50,7 +50,6 @@ unsigned int getRomPosition(TilePreset &preset, unsigned int directAddr, unsigne
     if (directAddr == 0) {
         filePos = rommapping_snes_to_pc(snesAddr, rType, romHasHeader);
     } else {
-        qDebug() << "direct file location";
         filePos = directAddr;
         if (romHasHeader)
             filePos += 0x200;
@@ -100,7 +99,6 @@ QVector<QRgb> ROMDataEngine::extractPalette(TilePreset &preset)
     plop.seek(filePos);
     unsigned int palette_size = qPow(2, preset.bpp);// - 1;
     QByteArray ab = plop.read(palette_size * 2);
-    qDebug() << ab;
     char* data = ab.data();
     if (preset.paletteNoZeroColor)
     {
