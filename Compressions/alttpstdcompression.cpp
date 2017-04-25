@@ -21,14 +21,18 @@ QList<CompressionInfo> AlttpCompression::compressionList()
     return toret;
 }
 
-char *AlttpCompression::compress(QString name, const char *data, unsigned int start)
+char *AlttpCompression::compress(QString name, const char *data, unsigned int start, unsigned int lenght, unsigned int* compressedSize)
 {
+    if (name == "zelda3")
+    {
+        return ::compress(data, start, lenght, compressedSize);
+    }
     return NULL;
 }
 
 char *AlttpCompression::unCompress(QString name, const char *data, unsigned int start, unsigned int *uncompressedSize)
 {
-    char *toret;
+    char *toret = NULL;
     qDebug() << "Uncompress";
     if (name == "zelda3") {
         toret = decompress(data, start, uncompressedSize);

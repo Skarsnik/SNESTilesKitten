@@ -13,7 +13,7 @@ class AlttpCompression : public QObject, public CompressionInterface
 public:
     AlttpCompression();
     QList<CompressionInfo>  compressionList();
-    char*   compress(QString name, const char *data, unsigned int start);
+    char*   compress(QString name, const char *data, unsigned int start, unsigned int lenght, unsigned int *compressedSize);
     char*   unCompress(QString name, const char *data, unsigned int start, unsigned int *uncompressedSize);
 
 };

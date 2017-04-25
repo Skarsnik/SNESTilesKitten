@@ -11,7 +11,7 @@ class CompressionInterface {
   public:
     virtual ~CompressionInterface() {}
     virtual QList<CompressionInfo> compressionList() = 0;
-    virtual char* compress(QString name, const char* data, unsigned int start) = 0;
+    virtual char* compress(QString name, const char* data, unsigned int start, unsigned int lenght, unsigned int *compressedSize) = 0;
     virtual char* unCompress(QString name, const char* data, unsigned int start, unsigned int *uncompressedSize) = 0;
 };
 

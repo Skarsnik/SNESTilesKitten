@@ -13,9 +13,12 @@ class ROMDataEngine
 {
 public:
     ROMDataEngine();
-    bool            loadCompressionPlugins(QDir pluginsDir);
+    static bool            loadCompressionPlugins(QDir pluginsDir);
     QList<tile8>    extractTiles(TilePreset& preset);
     QVector<QRgb>   extractPalette(TilePreset& preset);
+
+    bool            injectTiles(const QList<tile8>& rawTiles, const TilePreset &preset);
+    bool            injectPalette(const QVector<QRgb>& mPalette, const TilePreset& preset);
 
     ROMInfo romInfo;
     bool    overrideHeaderInfo;
@@ -24,11 +27,16 @@ public:
     QString getRomFile() const;
     void setRomFile(const QString &value);
 
-    QMap<QString, CompressionInterface *> availableCompressions() const;
+    static QMap<QString, CompressionInterface *> availableCompressions();
 
 private:
-    QMap<QString, CompressionInterface*> m_availableCompressions;
+    unsigned int getRomPosition(const TilePreset &preset, unsigned int directAddr, unsigned int snesAddr);
     QString romFile;
+
+    static bool                                 loadedCompressionPlugins;
+    static QMap<QString, CompressionInterface*> m_availableCompressions;
+    static QMap<QString, CompressionInfo>       m_compressionsInfo;
+
 };
 
 #endif // ROMDATAENGINE_H

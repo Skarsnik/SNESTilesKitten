@@ -42,14 +42,9 @@ MainUI::MainUI(QWidget *parent) :
     buildPaletteScene();
 
     connect(ui->headerButtonGroup, SIGNAL(buttonClicked(int)), this, SLOT(on_headerButtonGroup_clicked(int)));
-    if (loadCompressionPlugins())
+    foreach(const QString& key, ROMDataEngine::availableCompressions().keys())
     {
-        foreach(const QString& key, dataEngine.availableCompressions().keys())
-        {
             ui->compressionComboBox->addItem(key);
-        }
-    } else {
-        qApp->exit(1);
     }
     if (1) {
         openRom("D:\\Emulation\\Zelda - A Link to the Past\\Zelda - A Link to the Past.smc");
@@ -170,23 +165,6 @@ void MainUI::setGrayscalePalette(unsigned int paletteSize)
         QRgb color = qRgb(i * (255 / psize), i * (255 / psize), i * (255 / psize));
         mPalette.append(color);
     }
-}
-
-bool MainUI::loadCompressionPlugins()
-{
-    QDir pluginsDir(qApp->applicationDirPath());
-#if defined(Q_OS_WIN)
-    if (pluginsDir.dirName().toLower() == "debug" || pluginsDir.dirName().toLower() == "release")
-        pluginsDir.cdUp();
-#elif defined(Q_OS_MAC)
-    if (pluginsDir.dirName() == "MacOS") {
-        pluginsDir.cdUp();
-        pluginsDir.cdUp();
-        pluginsDir.cdUp();
-    }
-#endif
-    pluginsDir.cd("plugins");
-    return dataEngine.loadCompressionPlugins(pluginsDir);
 }
 
 bool MainUI::extractPalette()

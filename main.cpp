@@ -16,6 +16,7 @@ bool    pngFile = true;
 QString externalFile;
 QString presetFile;
 QString romFile;
+bool    romCopy = false;
 #include <QDebug>
 
 bool    processArgument(QApplication&, QCommandLineParser& parser);
@@ -23,6 +24,7 @@ void    doStuff();
 
 int main(int argc, char *argv[])
 {
+    // Windows hack to have output in the console
 #ifdef Q_OS_WIN
         /*AllocConsole();*/
 
@@ -31,11 +33,26 @@ int main(int argc, char *argv[])
         freopen("CON", "w", stderr);
         freopen("CON", "r", stdin);
 #endif
+
     QApplication a(argc, argv);
 
     QApplication::setApplicationName("SNESTilesKitten");
     QApplication::setApplicationVersion(QString(__DATE__));
 
+    QDir pluginsDir(qApp->applicationDirPath());
+//TODO Linux handling
+#if defined(Q_OS_WIN)
+    if (pluginsDir.dirName().toLower() == "debug" || pluginsDir.dirName().toLower() == "release")
+        pluginsDir.cdUp();
+#elif defined(Q_OS_MAC)
+    if (pluginsDir.dirName() == "MacOS") {
+        pluginsDir.cdUp();
+        pluginsDir.cdUp();
+        pluginsDir.cdUp();
+    }
+#endif
+    pluginsDir.cd("plugins");
+    ROMDataEngine::loadCompressionPlugins(pluginsDir);
     if (a.arguments().size() > 1)
     {
           QCommandLineParser parser;
@@ -61,17 +78,19 @@ bool    processArgument(QApplication &app, QCommandLineParser& parser)
 
     QCommandLineOption pngOption("png", tr("option", "Work with PNG file (export/import), default"));
     QCommandLineOption rawOption("raw", tr("option", "Work with RAW file (export/import)"));
-    QCommandLineOption copyOption("copy", tr("option", "Do a copy of the data as raw snes tile"), "filename");
+    QCommandLineOption copyOption("rawcopy", tr("option", "Do a copy of the data as raw snes tile"), "filename");
+    QCommandLineOption romCopyOption("copy", tr("option", "Work on a copy of the ROM when applying change"));
     parser.addOption(pngOption);
     parser.addOption(rawOption);
     parser.addOption(copyOption);
+    parser.addOption(romCopyOption);
 
     QCommandLineOption outputOption(QStringList() << "o" << "output", tr("option", "The file to output the tiles"), tr("option", "filename"));
     QCommandLineOption inputOption(QStringList() << "i" << "input", tr("option", "The file used as input for injection"), tr("option", "filename"));
     parser.addOption(outputOption);
     parser.addOption(inputOption);
-    QCommandLineOption exportOption("extract", tr("option", "Export mode"));
-    QCommandLineOption importOption("inject", tr("option", "import mode"));
+    QCommandLineOption exportOption("extract", tr("option", "Extract mode"));
+    QCommandLineOption importOption("inject", tr("option", "Inject mode"));
     parser.addOption(exportOption);
     parser.addOption(importOption);
 
@@ -89,12 +108,12 @@ bool    processArgument(QApplication &app, QCommandLineParser& parser)
         workingModeExport = false;
     if (parser.isSet(outputOption) && workingModeExport == false)
     {
-        fprintf(stderr, "Can't use the output option in import mode\n");
+        fprintf(stderr, "Can't use the output option in inject mode\n");
         return false;
     }
     if (parser.isSet(inputOption) && workingModeExport == true)
     {
-        fprintf(stderr, "Can't use the input option when working in export mode\n");
+        fprintf(stderr, "Can't use the input option when working in extract mode\n");
         return false;
     }
     if (parser.positionalArguments().empty())
@@ -115,6 +134,7 @@ bool    processArgument(QApplication &app, QCommandLineParser& parser)
         return false;
     }
     romFile = QFileInfo(romFile).absoluteFilePath();
+    romCopy = parser.isSet(romCopyOption);
     if (workingModeExport && parser.isSet(outputOption))
         externalFile = parser.value(outputOption);
     if (!workingModeExport && parser.isSet(inputOption))
@@ -152,11 +172,40 @@ void    extract()
     {
         QImage ImgExport = mergeTilesToImage(rawTiles, mPalette, preset.tilesPerRow);
         fprintf(stdout, "Writing to %s\n", qPrintable(externalFile));
-        ImgExport.save(externalFile, "PNG");
+        saveToPNG(ImgExport, externalFile);
     }
 }
 
 void    inject()
 {
+    if (romCopy)
+    {
+        QFileInfo fi(romFile);
+        QString copy = fi.absolutePath() + "/" + fi.baseName() + "_copy." + fi.completeSuffix();
+        fprintf(stdout, "Doing a copy of %s to %s\n", qPrintable(romFile), qPrintable(copy));
+        if (QFile::copy(romFile, copy) == false)
+        {
+            fprintf(stderr, "Can't create a copy of the rom file\n");
+            return;
+        }
+        romFile = copy;
+    }
     fprintf(stdout, "Injecting data\n");
+    TilePreset preset;
+    ROMDataEngine dataEngine;
+    dataEngine.setRomFile(romFile);
+    preset.load(presetFile);
+    QList<tile8> rawTiles;
+    if (pngFile)
+    {
+        rawTiles = tilesFromPNG(externalFile);
+        fprintf(stdout, "Number of tile extracted from the PNG : %d\n", rawTiles.size());
+        QVector<QRgb> mPalette = paletteFromPNG(externalFile);
+        /*
+        QImage pikoNg = mergeTilesToImage(rawTiles, mPalette, preset.tilesPerRow);
+        saveToPNG(pikoNg, "piko.png");*/
+        dataEngine.injectTiles(rawTiles, preset);
+        dataEngine.injectPalette(mPalette, preset);
+    }
+
 }

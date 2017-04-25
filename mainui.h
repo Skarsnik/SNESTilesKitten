@@ -84,7 +84,6 @@ private:
     void    buildTileScene();
     void    buildPaletteScene();
     void    setGrayscalePalette(unsigned int paletteSize = 16);
-    bool    loadCompressionPlugins();
     bool    extractPalette();
 
     void    closeEvent(QCloseEvent* event);

@@ -14,7 +14,7 @@ class TerranigmaCompression : public QObject, public CompressionInterface
 public:
     TerranigmaCompression();
     QList<CompressionInfo>  compressionList();
-    char*   compress(QString name, const char *data, unsigned int start);
+    char*   compress(QString name, const char *data, unsigned int start, unsigned int lenght, unsigned int *compressedSize);
     char*   unCompress(QString name, const char *data, unsigned int start, unsigned int *uncompressedSize);
 
 };
