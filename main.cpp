@@ -2,7 +2,10 @@
 #include "pngexportimport.h"
 #include <QApplication>
 #include <QCommandLineParser>
-
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <io.h>
 #include <stdio.h>
 #ifdef Q_OS_WIN
 #include <windows.h>
@@ -21,23 +24,27 @@ bool    romCopy = false;
 
 bool    processArgument(QApplication&, QCommandLineParser& parser);
 void    doStuff();
+void    showRomInfo(const ROMInfo& romInfo);
 
 int main(int argc, char *argv[])
 {
     // Windows hack to have output in the console
+    QApplication a(argc, argv);
+
+    QApplication::setApplicationName("SNESTilesKitten");
+    QApplication::setApplicationVersion(QString(__DATE__));
+
 #ifdef Q_OS_WIN
+    if (a.arguments().size() > 1)
+    {
         /*AllocConsole();*/
 
         AttachConsole(GetCurrentProcessId());
         freopen("CON", "w", stdout);
         freopen("CON", "w", stderr);
         freopen("CON", "r", stdin);
+    }
 #endif
-
-    QApplication a(argc, argv);
-
-    QApplication::setApplicationName("SNESTilesKitten");
-    QApplication::setApplicationVersion(QString(__DATE__));
 
     QDir pluginsDir(qApp->applicationDirPath());
 //TODO Linux handling
@@ -152,10 +159,21 @@ void    inject();
 
 void    doStuff()
 {
+    showRomInfo(ROMInfo(romFile));
     if (workingModeExport)
         extract();
     else
         inject();
+}
+
+void    showRomInfo(const ROMInfo& romInfo)
+{
+    if (romInfo.hasHeader)
+        fprintf(stdout, "ROM has SMC header\n");
+    else
+        fprintf(stdout, "ROM does not have SMC header\n");
+    fprintf(stdout, "ROM type is %s\n", qPrintable(romInfo.romType));
+    fprintf(stdout, "ROM Tile : %s\n", qPrintable(romInfo.romTitle));
 }
 
 void    extract()
@@ -183,10 +201,18 @@ void    inject()
         QFileInfo fi(romFile);
         QString copy = fi.absolutePath() + "/" + fi.baseName() + "_copy." + fi.completeSuffix();
         fprintf(stdout, "Doing a copy of %s to %s\n", qPrintable(romFile), qPrintable(copy));
+        if (QFileInfo::exists(copy))
+        {
+            if (!QFile::remove(copy))
+            {
+                fprintf(stderr, "Can't remove rom copy (%s)\n", qPrintable(copy));
+                return ;
+            }
+        }
         if (QFile::copy(romFile, copy) == false)
         {
             fprintf(stderr, "Can't create a copy of the rom file\n");
-            return;
+            return ;
         }
         romFile = copy;
     }
@@ -204,8 +230,20 @@ void    inject()
         /*
         QImage pikoNg = mergeTilesToImage(rawTiles, mPalette, preset.tilesPerRow);
         saveToPNG(pikoNg, "piko.png");*/
-        dataEngine.injectTiles(rawTiles, preset);
-        dataEngine.injectPalette(mPalette, preset);
+        fprintf(stdout, "Preset file says lenght is : %d\n", preset.length);
+        if (!dataEngine.injectTiles(rawTiles, preset))
+        {
+            fprintf(stderr, "Error while injecting tile\n");
+            return ;
+        }
+        if (preset.compression != "None")
+        {
+            fprintf(stdout, "Compressed data size is %d\n", dataEngine.lastCompressSize);
+            if (preset.length < dataEngine.lastCompressSize)
+                fprintf(stderr, "Error: The compressed lenght is superior to the lenght in the preset file\n");
+        }
+        if (preset.pcPaletteLocation != 0 || preset.SNESPaletteLocation != 0)
+            dataEngine.injectPalette(mPalette, preset);
     }
 
 }

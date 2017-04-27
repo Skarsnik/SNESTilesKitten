@@ -83,6 +83,11 @@ bool MainUI::extractTiles()
     dataEngine.overrideHeaderInfo = true;
     dataEngine.overridenHeaderInfo = romHasHeader;
     rawTiles = dataEngine.extractTiles(currentSet);
+    if (currentSet.compression != "None")
+    {
+        ui->sizeLineEdit->setText(QString::number(dataEngine.lastCompressedSize));
+        ui->statusBar->showMessage("Tiles presetset size get ajusted to the compressed string size");
+    }
     return !rawTiles.isEmpty();
 }
 
@@ -197,46 +202,6 @@ void MainUI::on_headerButtonGroup_clicked(int)
     romHasHeader = ui->headerRadioButton->isChecked();
 }
 
-void MainUI::updateUiWithPreset()
-{
-    ui->headerRadioButton->setChecked(romHasHeader);
-    ui->loRomRadioButton->setChecked(currentSet.romType == "LoROM");
-    if (currentSet.SNESTilesLocation != 0)
-    {
-        ui->tilesSNESRadioButton->toggle();
-        ui->snesAddrLineEdit->setText(QString::number(currentSet.SNESTilesLocation, 16));       
-    }
-    else
-    {
-        ui->tilesPCRadioButton->toggle();
-        ui->pcAddrLineEdit->setText(QString::number(currentSet.pcTilesLocation, 16));   
-    }
-    ui->sizeLineEdit->setText(QString::number(currentSet.length));
-    ui->compressionComboBox->setCurrentText(currentSet.compression);
-    switch (currentSet.bpp)
-    {
-        case 2:
-            ui->bpp2RadioButton->setChecked(true);
-        case 3:
-            ui->bpp3RadioButton->setChecked(true);
-        case 4:
-            ui->bpp4RadioButton->setChecked(true);
-    }
-    ui->tilesPerRowSpinBox->setValue(currentSet.tilesPerRow);
-    tilesPerRow = currentSet.tilesPerRow;
-    if (currentSet.SNESPaletteLocation != 0)
-    {
-        ui->paletteSNESLocationRadioButton->toggle();
-        ui->paletteSNESLocationLineEdit->setText(QString::number(currentSet.SNESPaletteLocation, 16));
-    }
-    if (currentSet.pcPaletteLocation != 0)
-    {
-        ui->palettePCLocationRadioButton->toggle();
-        ui->palettePCLocationLineEdit->setText(QString::number(currentSet.pcPaletteLocation, 16));
-    }
-    ui->paletteNoZeroColorRadioButton->setChecked(currentSet.paletteNoZeroColor);
-}
-
 void MainUI::updateGTileView()
 {
     if (currentSet.SNESPaletteLocation == 0 && currentSet.pcPaletteLocation == 0)
@@ -326,6 +291,57 @@ bool MainUI::loadPreset(const QString& presetFile)
     }
 }
 
+void MainUI::updateUiWithPreset()
+{
+    ui->headerRadioButton->setChecked(romHasHeader);
+    ui->loRomRadioButton->setChecked(currentSet.romType == "LoROM");
+    if (currentSet.SNESTilesLocation != 0)
+    {
+        ui->tilesSNESRadioButton->toggle();
+        ui->snesAddrLineEdit->setText(QString::number(currentSet.SNESTilesLocation, 16));
+    }
+    else
+    {
+        ui->tilesPCRadioButton->toggle();
+        ui->pcAddrLineEdit->setText(QString::number(currentSet.pcTilesLocation, 16));
+    }
+    ui->sizeLineEdit->setText(QString::number(currentSet.length));
+    ui->compressionComboBox->setCurrentText(currentSet.compression);
+    switch (currentSet.bpp)
+    {
+        case 2:
+        {
+            ui->bpp2RadioButton->setChecked(true);
+            break;
+        }
+        case 3:
+        {
+            ui->bpp3RadioButton->setChecked(true);
+            break;
+        }
+        case 4:
+            ui->bpp4RadioButton->setChecked(true);
+    }
+    ui->tilesPerRowSpinBox->setValue(currentSet.tilesPerRow);
+    tilesPerRow = currentSet.tilesPerRow;
+    if (currentSet.SNESPaletteLocation != 0)
+    {
+        ui->paletteSNESLocationRadioButton->toggle();
+        ui->paletteSNESLocationLineEdit->setText(QString::number(currentSet.SNESPaletteLocation, 16));
+    }
+    if (currentSet.pcPaletteLocation != 0)
+    {
+        ui->palettePCLocationRadioButton->toggle();
+        ui->palettePCLocationLineEdit->setText(QString::number(currentSet.pcPaletteLocation, 16));
+    }
+    if (currentSet.pcPaletteLocation == 0 && currentSet.SNESPaletteLocation == 0)
+    {
+        ui->palettePCLocationLineEdit->clear();
+        ui->paletteSNESLocationLineEdit->clear();
+        ui->paletteGrayRadioButton->toggle();
+    }
+}
+
 /* We use only thing that affect the set, rom header is not really important here for example */
 /* Tile arrangement is not updated here */
 
@@ -398,6 +414,7 @@ void MainUI::on_presetSavePushButton_clicked()
     if (ok) {
         QString presetFile = QFileDialog::getSaveFileName(this, tr("Preset file"), lastPresetDirectory + "/" + presetName + ".stk", tr("stk (*.stk)"));
         if (!presetFile.isEmpty()) {
+            updatePresetWithUi();
             currentSet.name = presetName;
             if (currentSet.save(presetFile)) {
                 lastPresetDirectory = QFileInfo(presetFile).dir().absolutePath();
@@ -422,7 +439,10 @@ void MainUI::on_pngExportPushButton_clicked()
     {
         QImage img = mergeTilesToImage(rawTiles, mPalette, tilesPerRow);
         if (saveToPNG(img, pngFile))
+        {
+            lastPNGDirectory = QFileInfo(pngFile).dir().absolutePath();
             ui->statusBar->showMessage("Export to " + pngFile + " succesfull");
+        }
         else
             ui->statusBar->showMessage("Error while exporting to " + pngFile);
     }

@@ -23,6 +23,9 @@ public:
     ROMInfo romInfo;
     bool    overrideHeaderInfo;
     bool    overridenHeaderInfo;
+    unsigned int    lastUnCompressSize;
+    unsigned int    lastCompressedSize;
+    unsigned int    lastCompressSize;
 
     QString getRomFile() const;
     void setRomFile(const QString &value);

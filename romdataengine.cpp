@@ -13,6 +13,9 @@ QMap<QString, CompressionInfo>       ROMDataEngine::m_compressionsInfo;
 ROMDataEngine::ROMDataEngine()
 {
     overrideHeaderInfo = false;
+    lastUnCompressSize = 0;
+    lastCompressedSize = 0;
+    lastCompressSize = 0;
 }
 
 bool ROMDataEngine::loadCompressionPlugins(QDir pluginsDir)
@@ -68,9 +71,10 @@ QList<tile8> ROMDataEngine::extractTiles(TilePreset &preset)
     QString compressionSelected = preset.compression;
     if (compressionSelected != "None") {
         qDebug() << "Using " << compressionSelected << " compression";
-        data = m_availableCompressions[compressionSelected]->unCompress(compressionSelected, data, 0, &size);
+        data = m_availableCompressions[compressionSelected]->unCompress(compressionSelected, data, 0, &size, &lastCompressedSize);
         if (data == NULL)
             return rawTiles;
+        lastUnCompressSize = size;
     }
     qDebug() << "Size : " << size;
     for (unsigned int tilePos = 0; tilePos < size; tilePos += preset.bpp * 8)
@@ -149,6 +153,13 @@ bool ROMDataEngine::injectTiles(const QList<tile8> &rawTiles, const TilePreset& 
         }
         unsigned int compressedSize;
         char* compressedTiles = m_availableCompressions[compression]->compress(compression, tilesString, 0, tileStringLenght, &compressedSize);
+        if (compressedTiles == NULL)
+        {
+            qCritical() << "Error with compression";
+            free(tilesString);
+            return false;
+        }
+        lastCompressSize = compressedSize;
         file.write(compressedTiles, compressedSize);
         free(compressedTiles);
 

@@ -24,7 +24,7 @@ char *TerranigmaCompression::compress(QString name, const char *data, unsigned i
     return NULL;
 }
 
-char *TerranigmaCompression::unCompress(QString name, const char* data, unsigned int start, unsigned int* uncompressedSize)
+char *TerranigmaCompression::unCompress(QString name, const char* data, const unsigned int start, unsigned int* uncompressedSize, unsigned int* compressedLength)
 {
     if (name == "Terranigma") {
         Comp    terraComp;

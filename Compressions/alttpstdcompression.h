@@ -2,7 +2,7 @@
 #define ALTTPCOMPRESSION_H
 
 #include <QObject>
-#include <../compressioninterface.h>
+#include "../compressioninterface.h"
 
 class AlttpCompression : public QObject, public CompressionInterface
 {
@@ -13,8 +13,8 @@ class AlttpCompression : public QObject, public CompressionInterface
 public:
     AlttpCompression();
     QList<CompressionInfo>  compressionList();
-    char*   compress(QString name, const char *data, unsigned int start, unsigned int lenght, unsigned int *compressedSize);
-    char*   unCompress(QString name, const char *data, unsigned int start, unsigned int *uncompressedSize);
+    char*   compress(QString name, const char *data, const unsigned int start, unsigned int lenght, unsigned int *compressedSize);
+    char*   unCompress(QString name, const char *data, const unsigned int start, unsigned int *uncompressedSize, unsigned int* compressedLength);
 
 };
 
