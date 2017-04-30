@@ -19,7 +19,7 @@ QList<CompressionInfo> TerranigmaCompression::compressionList()
     return toret;
 }
 
-char *TerranigmaCompression::alttp_compress(QString name, const char *data, unsigned int start, unsigned int lenght, unsigned int* compressedSize)
+char *TerranigmaCompression::compress(QString name, const char *data, unsigned int start, unsigned int lenght, unsigned int* compressedSize)
 {
     return NULL;
 }
