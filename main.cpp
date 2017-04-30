@@ -2,10 +2,6 @@
 #include "pngexportimport.h"
 #include <QApplication>
 #include <QCommandLineParser>
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <io.h>
 #include <stdio.h>
 #ifdef Q_OS_WIN
 #include <windows.h>

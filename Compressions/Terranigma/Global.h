@@ -27,12 +27,12 @@
 #include <string.h>
 #include <iostream>
 #include <vector>
-#include <tchar.h>
+#include <stdint.h>
 
 #define ADR(x)	((x)&0x3fffff)
 
-typedef unsigned __int64 u64;
-typedef signed __int64 s64;
+typedef uint64_t u64;
+typedef int64_t s64;
 typedef unsigned int u32;
 typedef signed int s32;
 typedef unsigned short u16;

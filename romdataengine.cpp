@@ -152,7 +152,7 @@ bool ROMDataEngine::injectTiles(const QList<tile8> &rawTiles, const TilePreset& 
             return false;
         }
         unsigned int compressedSize;
-        char* compressedTiles = m_availableCompressions[compression]->compress(compression, tilesString, 0, tileStringLenght, &compressedSize);
+        char* compressedTiles = m_availableCompressions[compression]->alttp_compress(compression, tilesString, 0, tileStringLenght, &compressedSize);
         if (compressedTiles == NULL)
         {
             qCritical() << "Error with compression";

@@ -10,6 +10,8 @@ TARGET = alttpcompression
 TEMPLATE = lib
 CONFIG += plugin
 
+QMAKE_CFLAGS += "-std=c99"
+
 DESTDIR = ../plugins
 
 SOURCES += alttpstdcompression.cpp \

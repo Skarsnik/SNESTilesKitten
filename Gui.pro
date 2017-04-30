@@ -10,7 +10,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = SNESTilesKitten
 TEMPLATE = app
-
+QMAKE_CFLAGS += "-std=c99"
 
 SOURCES += main.cpp\
         mainui.cpp \

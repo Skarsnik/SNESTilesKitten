@@ -25,7 +25,7 @@ char *AlttpCompression::compress(QString name, const char *data, const unsigned 
 {
     if (name == "zelda3")
     {
-        return ::compress(data, start, lenght, compressedSize);
+        return alttp_compress(data, start, lenght, compressedSize);
     }
     return NULL;
 }
@@ -35,7 +35,7 @@ char *AlttpCompression::unCompress(QString name, const char *data, const unsigne
     char *toret = NULL;
     if (name == "zelda3") {
         qDebug() << QString::number((unsigned int) data, 16) << start;
-        toret = decompress(data, start, uncompressedSize, compressedLength);
+        toret = alttp_decompress(data, start, uncompressedSize, compressedLength);
         if (toret != NULL)
         {
             qDebug() << *uncompressedSize;
