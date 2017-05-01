@@ -430,7 +430,7 @@ void MainUI::on_presetSavePushButton_clicked()
 
 void MainUI::on_pngExportPushButton_clicked()
 {
-    unsigned int piko = currentSet.pcTilesLocation == 0 ? currentSet.SNESTilesLocation : currentSet.pcPaletteLocation;
+    unsigned int piko = currentSet.pcTilesLocation == 0 ? currentSet.SNESTilesLocation : currentSet.pcTilesLocation;
     QString exportName = dataEngine.romInfo.romTitle + "_" + QString::number(piko, 16);
     if (!currentSet.name.isEmpty())
         exportName = currentSet.name;
@@ -445,5 +445,25 @@ void MainUI::on_pngExportPushButton_clicked()
         }
         else
             ui->statusBar->showMessage("Error while exporting to " + pngFile);
+    }
+}
+
+void MainUI::on_pngImportpushButton_clicked()
+{
+    QString pngFile = QFileDialog::getOpenFileName(this,
+                                tr("Select PNG image to inject"), lastPNGDirectory, tr("png (*.png)"));
+    if (!pngFile.isEmpty())
+    {
+        updatePresetWithUi();
+        QList<tile8>    importedRawTiles = tilesFromPNG(pngFile);
+        dataEngine.injectTiles(importedRawTiles, currentSet);
+        if (currentSet.pcPaletteLocation != 0 || currentSet.SNESPaletteLocation != 0)
+        {
+            QVector<QRgb> ImportedPalette = paletteFromPNG(pngFile);
+            dataEngine.injectPalette(ImportedPalette, currentSet);
+        }
+        rawTiles = importedRawTiles;
+        createImageList();
+        buildTileScene();
     }
 }
