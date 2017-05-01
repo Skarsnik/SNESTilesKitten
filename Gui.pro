@@ -24,7 +24,8 @@ SOURCES += main.cpp\
     rominfo.cpp \
     presetsavedialog.cpp \
     pngexportimport.cpp \
-    romdataengine.cpp
+    romdataengine.cpp \
+    graphicstileitem.cpp
 
 HEADERS  += mainui.h \
     tilepreset.h \
@@ -37,7 +38,8 @@ HEADERS  += mainui.h \
     rominfo.h \
     presetsavedialog.h \
     pngexportimport.h \
-    romdataengine.h
+    romdataengine.h \
+    graphicstileitem.h
 
 FORMS    += mainui.ui \
     presetsavedialog.ui

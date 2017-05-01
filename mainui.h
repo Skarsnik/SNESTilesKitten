@@ -50,6 +50,8 @@ private slots:
 
     void on_pngExportPushButton_clicked();
 
+    void on_pngImportpushButton_clicked();
+
 private:
     Ui::MainUI      *ui;
     TilePreset      currentSet;
