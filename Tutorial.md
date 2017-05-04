@@ -1,6 +1,11 @@
+---
+layout: post
+title: Tutorial
+---
+
 # Tutorial
 
-If you are already familiar with SNES hacking you can skip to SNESTilesKitten
+If you are already familiar with SNES hacking you can skip to [SNESTilesKitten](#snestileskitten)
 
 ## General informations
 
