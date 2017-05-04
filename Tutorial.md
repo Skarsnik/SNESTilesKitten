@@ -1,10 +1,10 @@
-#Tutorial
+# Tutorial
 
 If you are already familiar with SNES hacking you can skip to SNESTilesKitten
 
 ## General informations
 
-###Tiles, sprites and palette
+### Tiles, sprites and palette
 
 First to understand SNESTiles it helps to understand these 3 notions.
 
@@ -73,9 +73,11 @@ Link default palette is located at **0xDD308**
 ### Getting Link sprite
 
 First you want to load the rom. Just click on the ... button
-**Open ROM image**
+![](https://skarsnik.github.io/SNESTilesKitten/webimage/openrom.png)
 
 SNESTilesKitten will set the rom property and show some information on the status bar.
+
+![](https://skarsnik.github.io/SNESTilesKitten/webimage/openromstatus.png)
 
 Now we need to edit the Tiles location/property
 
@@ -87,7 +89,7 @@ We don't choose a compression, since default is **None** then we set the **bpp**
 
 You can already hit the **refresh** button since SNESTilesKitten use a default gray palette
 
-**defaultbadlinksprite.png**
+![](https://skarsnik.github.io/SNESTilesKitten/webimage/defaultbadlinksprite.png)
 
 As you can see it look like Link face and a part of its body. It look odd because each tiles are stored linearly in the ROM but each part of Link body and head is 4 tiles. 
 
@@ -95,19 +97,19 @@ It's the game code that put the right tiles together to form the final sprite an
 
 We could work on the tiles like that but it will be pretty annoying to rearrange them. Let's change **The tiles show per row** value to **16**
 
-**linkspritenocolor.png**
+![](https://skarsnik.github.io/SNESTilesKitten/webimage/linkspritenocolor.png)
 
 Luckily it look better but we don't have the colors
 
 Let check the **PC location** radio button on the palette part and put **DD308** then hit refresh again.
 
-**linkspritebadcolor.png**
+![](https://skarsnik.github.io/SNESTilesKitten/webimage/linkspritenbadcolor.png)
 
 It start looking like Link, sadly color are weird. It comes from how Zelda 3 work with palette. It only store 15 colors for 16 colors palette because the first color (color 0) is assumed to be the transparency. 
 
 Check the **color 0 is not included** checkbox and hit refresh again. STK will replace color 0 with gray and consider the first color of the stored palette to be the second. You should have a beautiful looking Link.  
 
-**linkspritegoodcolor.png**
+![](https://skarsnik.github.io/SNESTilesKitten/webimage/linkspritegoodcolors.png)
 
 At this point we should save everything we enter to a preset. It will be easier to work again on this later. Just hit the **Save preset** button. A dialog will appear for you to specify a Name to the preset. It will prefill the name with the rom title
 
@@ -119,7 +121,8 @@ The **PNG** format allow you to specify a color table (a palette) for your image
 
 Just hit the **export to PNG** button bellow the tiles scene and choose a location to save the whole tileset. You should have a png file that look like this.
 
-**completelinksprite.png**
+
+![](https://skarsnik.github.io/SNESTilesKitten/webimage/completelinksprite.png)
 
 Yes the resolution is small since it's the original tileset resolution.
 
@@ -133,7 +136,8 @@ I used a tileset that replace Link sprite by a pony for this tutorial.
 
 Hit the **replace with PNG** button. You will be prompted to select a file to inject. When this step is done you have the **inject dialog** showing you the image you want to inject and both palette.
 
-**injectdialog.png**
+![](https://skarsnik.github.io/SNESTilesKitten/webimage/injectderpy.png)
+
 
 I recommand checking the **work on a copy of the rom file** to avoid erasing your currently working rom.
 
@@ -141,7 +145,8 @@ And that it, you should should have a copy of your rom with the changed sprite.
 
 Here Link changed sprite on snes9x
 
-**emulatorsprite.png**
+
+![](https://skarsnik.github.io/SNESTilesKitten/webimage/alttpgamederpy.png)
 
 
 
