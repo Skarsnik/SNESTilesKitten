@@ -14,7 +14,7 @@ You can create tiles preset with it so you can reuse your discoveries or share t
 
 # Download
 
-You can use the top button to get the source code of SNESTilesKitten. It only have Windows release for now.
+You can download the latest release [here](https://github.com/Skarsnik/SNESTilesKitten/releases/latest) It's a Windows 64 bits version.
 
 To get instructions on how to compile the tool, see the [github project page](https://github.com/Skarsnik/SNESTilesKitten/)
 
