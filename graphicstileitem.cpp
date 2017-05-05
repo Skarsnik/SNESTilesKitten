@@ -17,5 +17,5 @@ QRectF GraphicsTileItem::boundingRect() const
 void GraphicsTileItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     QPixmap pix = image.scaled(tileZoom, tileZoom);
-    painter->drawImage(0, 0, pix);
+    painter->drawPixmap(0, 0, pix);
 }

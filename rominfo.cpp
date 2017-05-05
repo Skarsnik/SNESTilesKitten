@@ -1,11 +1,14 @@
 #include "rominfo.h"
 #include <QDebug>
 #include <QFile>
+#include <QFileInfo>
 
 ROMInfo::ROMInfo(QString romFile)
 {
     if (romFile.isEmpty())
             return;
+    QFileInfo fi(romFile);
+    size = fi.size();
     QFile f(romFile);
     f.open(QIODevice::ReadOnly);
     if (f.size() & 0x200)

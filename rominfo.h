@@ -11,6 +11,7 @@ public:
     bool    hasHeader;
     QString romType;
     QString romTitle;
+    unsigned int size;
 
 };
 

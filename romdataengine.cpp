@@ -220,6 +220,11 @@ QMap<QString, CompressionInterface *> ROMDataEngine::availableCompressions()
     return m_availableCompressions;
 }
 
+QMap<QString, CompressionInfo> ROMDataEngine::compressionInfos()
+{
+    return m_compressionsInfo;
+}
+
 unsigned int ROMDataEngine::getRomPosition(const TilePreset &preset, unsigned int directAddr, unsigned int snesAddr)
 {
     bool    romHasHeader = romInfo.hasHeader;

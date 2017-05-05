@@ -1,5 +1,6 @@
 #include "compressioninterface.h"
 #include "graphicspalettecoloritem.h"
+#include "graphicstileitem.h"
 #include "mainui.h"
 #include "ui_mainui.h"
 
@@ -14,6 +15,7 @@
 #include "lowlevelstuff/src/rommapping.h"
 #include "lowlevelstuff/src/palette.h"
 #include "pngexportimport.h"
+#include "injectdialog.h"
 
 
 MainUI::MainUI(QWidget *parent) :
@@ -24,17 +26,17 @@ MainUI::MainUI(QWidget *parent) :
     ui->presetOpenPushButton->setIcon(style()->standardPixmap(QStyle::SP_DialogOpenButton));
     ui->presetSavePushButton->setIcon(style()->standardPixmap(QStyle::SP_DialogSaveButton));
     QRegExpValidator* hexValid = new QRegExpValidator(QRegExp("[0-F|a-f]{0,8}"));
+    QIntValidator* sizeValid = new QIntValidator(0, 1024 * 1024 * 1024);
     romHasHeader = true;
 
     ui->snesAddrLineEdit->setValidator(hexValid);
     ui->pcAddrLineEdit->setValidator(hexValid);
     ui->palettePCLocationLineEdit->setValidator(hexValid);
     ui->paletteSNESLocationLineEdit->setValidator(hexValid);
+    ui->sizeLineEdit->setValidator(sizeValid);
+    tilesPerRow = 8;
 
-    tilesZoom = 30;
-    tilesPerRow = 16;
-
-    tileScene = new QGraphicsScene();
+    tileScene = new GraphicsTilesScene();
     palScene = new QGraphicsScene();
     ui->graphicsView->setScene(tileScene);
     ui->paletteGraphicsView->setScene(palScene);
@@ -42,13 +44,14 @@ MainUI::MainUI(QWidget *parent) :
     buildPaletteScene();
 
     connect(ui->headerButtonGroup, SIGNAL(buttonClicked(int)), this, SLOT(on_headerButtonGroup_clicked(int)));
+    compressInfos = ROMDataEngine::compressionInfos();
     foreach(const QString& key, ROMDataEngine::availableCompressions().keys())
     {
             ui->compressionComboBox->addItem(key);
     }
-    if (1) {
+    if (0) {
         openRom("D:\\Emulation\\Zelda - A Link to the Past\\Zelda - A Link to the Past.smc");
-        loadPreset("D:\\Project\\SNESTilesKitten\\Presets\\The legend of Zelda - Link Sprites.stk");
+        loadPreset("D:\\Project\\SNESTilesKitten\\Presets\\The Legend of Zelda - Link Sprites.stk");
     }
     m_settings = new QSettings("skarsnik.nyo.fr", "SNESTilesKitten");
     if (m_settings->contains("windowGeometry"))
@@ -59,6 +62,8 @@ MainUI::MainUI(QWidget *parent) :
         restoreGeometry(m_settings->value("windowGeometry").toByteArray());
         restoreState(m_settings->value("windowState").toByteArray());
     }
+    setWindowTitle(qApp->applicationName() + " " + qApp->applicationVersion());
+    dataEngine.overrideHeaderInfo = true;
 }
 
 MainUI::~MainUI()
@@ -80,7 +85,6 @@ void    show_tile8(tile8 t)
 
 bool MainUI::extractTiles()
 {
-    dataEngine.overrideHeaderInfo = true;
     dataEngine.overridenHeaderInfo = romHasHeader;
     rawTiles = dataEngine.extractTiles(currentSet);
     if (currentSet.compression != "None")
@@ -90,6 +94,14 @@ bool MainUI::extractTiles()
     }
     return !rawTiles.isEmpty();
 }
+
+bool MainUI::extractPalette()
+{
+    dataEngine.overridenHeaderInfo = romHasHeader;
+    mPalette = dataEngine.extractPalette(currentSet);
+    return !mPalette.isEmpty();
+}
+
 
 void MainUI::createImageList()
 {
@@ -120,22 +132,8 @@ void MainUI::createImageList()
 
 void MainUI::buildTileScene()
 {
-    tileScene->clear();
-    int i = 0;
-    int j = 0;
-    tileScene->setBackgroundBrush(Qt::blue);
-    foreach(QImage image, images)
-    {
-        QGraphicsPixmapItem *newPixItem = new QGraphicsPixmapItem(QPixmap().fromImage(image).scaled(tilesZoom, tilesZoom));
-        newPixItem->setPos(i * newPixItem->boundingRect().width() + i, j * newPixItem->boundingRect().width() + j);
-        tileScene->addItem(newPixItem);
-        i++;
-        if (i % tilesPerRow == 0) {
-            j++;
-            i = 0;
-        }
-    }
-    tileScene->setSceneRect(tileScene->itemsBoundingRect());
+   tileScene->setTilesPerRow(tilesPerRow);
+   tileScene->buildScene(images, rawTiles);
 }
 
 void MainUI::buildPaletteScene()
@@ -171,13 +169,6 @@ void MainUI::setGrayscalePalette(unsigned int paletteSize)
         mPalette.append(color);
     }
 }
-
-bool MainUI::extractPalette()
-{
-    mPalette = dataEngine.extractPalette(currentSet);
-    return !mPalette.isEmpty();
-}
-
 
 void MainUI::closeEvent(QCloseEvent *event)
 {
@@ -240,10 +231,10 @@ void MainUI::on_paletteGrayRadioButton_toggled(bool checked)
     {
         currentSet.SNESPaletteLocation = 0;
         currentSet.pcPaletteLocation = 0;
-        ui->paletteNoZeroColorRadioButton->setEnabled(false);
+        ui->paletteNoZeroColorCheckBox->setEnabled(false);
     }
     else
-        ui->paletteNoZeroColorRadioButton->setEnabled(true);
+        ui->paletteNoZeroColorCheckBox->setEnabled(true);
 }
 
 void MainUI::on_tilesSNESRadioButton_toggled(bool checked)
@@ -272,6 +263,8 @@ void MainUI::openRom(QString rom)
     ui->romFileLineEdit->setText(rom);
     ui->statusBar->showMessage(QFileInfo(rom).baseName() + " loaded - " + romInfo.romType + " - Rom title is : " + romInfo.romTitle);
     romFile = rom;
+    QIntValidator* intVal = (QIntValidator*) ui->sizeLineEdit->validator();
+    intVal->setTop(romInfo.size);
     lastROMDirectory = QFileInfo(rom).dir().absolutePath();
 
 }
@@ -334,11 +327,13 @@ void MainUI::updateUiWithPreset()
         ui->palettePCLocationRadioButton->toggle();
         ui->palettePCLocationLineEdit->setText(QString::number(currentSet.pcPaletteLocation, 16));
     }
+    ui->paletteNoZeroColorCheckBox->setChecked(currentSet.paletteNoZeroColor);
     if (currentSet.pcPaletteLocation == 0 && currentSet.SNESPaletteLocation == 0)
     {
         ui->palettePCLocationLineEdit->clear();
         ui->paletteSNESLocationLineEdit->clear();
         ui->paletteGrayRadioButton->toggle();
+        ui->paletteNoZeroColorCheckBox->setEnabled(false);
     }
 }
 
@@ -370,8 +365,8 @@ void MainUI::updatePresetWithUi()
         currentSet.SNESPaletteLocation = ui->paletteSNESLocationLineEdit->text().toUInt(&ok, 16);
     if (ui->palettePCLocationRadioButton->isChecked())
         currentSet.pcPaletteLocation = ui->palettePCLocationLineEdit->text().toUInt(&ok, 16);
-    if (ui->paletteNoZeroColorRadioButton->isEnabled())
-        currentSet.paletteNoZeroColor = ui->paletteNoZeroColorRadioButton->isChecked();
+    if (ui->paletteNoZeroColorCheckBox->isEnabled())
+        currentSet.paletteNoZeroColor = ui->paletteNoZeroColorCheckBox->isChecked();
 }
 
 void MainUI::on_tilesPerRowSpinBox_valueChanged(int arg1)
@@ -381,14 +376,13 @@ void MainUI::on_tilesPerRowSpinBox_valueChanged(int arg1)
 
 void MainUI::on_tileZoomHorizontalSlider_valueChanged(int value)
 {
-    tilesZoom = value;
-    buildTileScene();
+    tileScene->setTilesZoom(value);
 }
 
 void MainUI::on_tilesPerRowSpinBox_editingFinished()
 {
     tilesPerRow = ui->tilesPerRowSpinBox->value();
-    buildTileScene();
+    tileScene->setTilesPerRow(tilesPerRow);
 }
 
 void MainUI::on_presetOpenPushButton_clicked()
@@ -454,16 +448,59 @@ void MainUI::on_pngImportpushButton_clicked()
                                 tr("Select PNG image to inject"), lastPNGDirectory, tr("png (*.png)"));
     if (!pngFile.isEmpty())
     {
-        updatePresetWithUi();
-        QList<tile8>    importedRawTiles = tilesFromPNG(pngFile);
-        dataEngine.injectTiles(importedRawTiles, currentSet);
-        if (currentSet.pcPaletteLocation != 0 || currentSet.SNESPaletteLocation != 0)
+        InjectDialog iDiag(this, pngFile, mPalette);
+        QFileInfo fi(romFile);
+        QString copy = fi.absolutePath() + "/" + fi.baseName() + "_copy." + fi.completeSuffix();
+        iDiag.setCopyRomString(fi.baseName() + "_copy." + fi.completeSuffix());
+        if (iDiag.exec())
         {
-            QVector<QRgb> ImportedPalette = paletteFromPNG(pngFile);
-            dataEngine.injectPalette(ImportedPalette, currentSet);
+            if (iDiag.copyRom)
+            {
+                if (QFileInfo::exists(copy))
+                {
+                    if (!QFile::remove(copy))
+                    {
+                        qCritical() << "Can't remove rom copy " << copy;
+                        return ;
+                    }
+                    if (QFile::copy(romFile, copy) == false)
+                    {
+                        qCritical() << "Can't create a copy of the rom file\n";
+                        return ;
+                    }
+                }
+                qDebug() << "Set rom copy";
+                dataEngine.setRomFile(copy);
+            }
+            qDebug() << "Importing stuff";
+            updatePresetWithUi();
+            QList<tile8>    importedRawTiles = tilesFromPNG(pngFile);
+            dataEngine.injectTiles(importedRawTiles, currentSet);
+            if ((currentSet.pcPaletteLocation != 0 || currentSet.SNESPaletteLocation != 0) && iDiag.useImagePalette)
+            {
+                QVector<QRgb> ImportedPalette = paletteFromPNG(pngFile);
+                dataEngine.injectPalette(ImportedPalette, currentSet);
+                mPalette = ImportedPalette;
+            }
+            if (iDiag.copyRom)
+            {
+                dataEngine.setRomFile(romFile);
+                ui->statusBar->showMessage("Import successfull - Displaying tiles of the copy");
+            } else {
+                ui->statusBar->showMessage("Import successfull");
+            }
+            rawTiles = importedRawTiles;
+            createImageList();
+            buildTileScene();
         }
-        rawTiles = importedRawTiles;
-        createImageList();
-        buildTileScene();
     }
+}
+
+void MainUI::on_compressionComboBox_currentIndexChanged(const QString &arg1)
+{
+    if (arg1 == "None" || compressInfos[arg1].canCompress)
+        ui->pngImportpushButton->setEnabled(true);
+    else
+        ui->pngImportpushButton->setEnabled(false);
+
 }

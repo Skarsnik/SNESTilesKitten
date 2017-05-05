@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QGraphicsItem>
+#include <QPainter>
 #include "lowlevelstuff/src/tile.h"
 #include <QPixmap>
 

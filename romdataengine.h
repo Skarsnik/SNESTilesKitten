@@ -31,6 +31,7 @@ public:
     void setRomFile(const QString &value);
 
     static QMap<QString, CompressionInterface *> availableCompressions();
+    static QMap<QString, CompressionInfo>        compressionInfos();
 
 private:
     unsigned int getRomPosition(const TilePreset &preset, unsigned int directAddr, unsigned int snesAddr);

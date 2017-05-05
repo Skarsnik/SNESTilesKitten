@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include "lowlevelstuff/src/tile.h"
 #include "compressioninterface.h"
+#include "graphicstilesscene.h"
 #include "romdataengine.h"
 #include "tilepreset.h"
 #include <QGraphicsScene>
@@ -52,6 +53,8 @@ private slots:
 
     void on_pngImportpushButton_clicked();
 
+    void on_compressionComboBox_currentIndexChanged(const QString &arg1);
+
 private:
     Ui::MainUI      *ui;
     TilePreset      currentSet;
@@ -61,10 +64,9 @@ private:
     QString         lastPNGDirectory;
 
     QString         romFile;
-    unsigned int    tilesZoom;
     unsigned int    tilesPerRow;
     bool            romHasHeader;
-    QGraphicsScene  *tileScene;
+    GraphicsTilesScene  *tileScene;
     QGraphicsScene  *palScene;
     ROMDataEngine   dataEngine;
 
@@ -73,7 +75,7 @@ private:
     char*           rawData;
     QVector<QRgb>   mPalette;
 
-    QMap<QString, CompressionInterface*>    availableCompressions;
+    QMap<QString, CompressionInfo>    compressInfos;
 
     void    openRom(QString rom);
     bool    loadPreset(const QString &presetFile);

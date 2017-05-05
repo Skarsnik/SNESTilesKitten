@@ -83,7 +83,11 @@ PC locations all assume the rom does not have the SMC header</string>
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout">
              <item>
-              <widget class="QLineEdit" name="romFileLineEdit"/>
+              <widget class="QLineEdit" name="romFileLineEdit">
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+              </widget>
              </item>
              <item>
               <widget class="QPushButton" name="romOpenButton">
@@ -190,9 +194,22 @@ PC locations all assume the rom does not have the SMC header</string>
               </widget>
              </item>
              <item>
+              <widget class="QLabel" name="label">
+               <property name="text">
+                <string>0x</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item>
               <widget class="QLineEdit" name="snesAddrLineEdit">
                <property name="enabled">
                 <bool>false</bool>
+               </property>
+               <property name="maxLength">
+                <number>8</number>
                </property>
               </widget>
              </item>
@@ -224,9 +241,40 @@ PC locations all assume the rom does not have the SMC header</string>
               </widget>
              </item>
              <item>
+              <widget class="QLabel" name="label_6">
+               <property name="text">
+                <string>0x</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item>
               <widget class="QLineEdit" name="pcAddrLineEdit">
                <property name="enabled">
                 <bool>false</bool>
+               </property>
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="baseSize">
+                <size>
+                 <width>40</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="maxLength">
+                <number>8</number>
                </property>
               </widget>
              </item>
@@ -405,6 +453,16 @@ PC locations all assume the rom does not have the SMC header</string>
                 </widget>
                </item>
                <item>
+                <widget class="QLabel" name="label_10">
+                 <property name="text">
+                  <string>0x</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item>
                 <widget class="QLineEdit" name="paletteSNESLocationLineEdit">
                  <property name="enabled">
                   <bool>false</bool>
@@ -455,6 +513,16 @@ PC locations all assume the rom does not have the SMC header</string>
                 </widget>
                </item>
                <item>
+                <widget class="QLabel" name="label_11">
+                 <property name="text">
+                  <string>0x</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item>
                 <widget class="QLineEdit" name="palettePCLocationLineEdit">
                  <property name="enabled">
                   <bool>false</bool>
@@ -495,7 +563,7 @@ PC locations all assume the rom does not have the SMC header</string>
                 </spacer>
                </item>
                <item>
-                <widget class="QRadioButton" name="paletteNoZeroColorRadioButton">
+                <widget class="QCheckBox" name="paletteNoZeroColorCheckBox">
                  <property name="text">
                   <string>Color 0 is not included</string>
                  </property>
@@ -774,10 +842,10 @@ PC locations all assume the rom does not have the SMC header</string>
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="paletteGroupButton"/>
-  <buttongroup name="buttonGroup"/>
-  <buttongroup name="headerButtonGroup"/>
-  <buttongroup name="buttonGroup_2"/>
   <buttongroup name="tilesLocationButtonGroup"/>
+  <buttongroup name="buttonGroup"/>
+  <buttongroup name="paletteGroupButton"/>
+  <buttongroup name="buttonGroup_2"/>
+  <buttongroup name="headerButtonGroup"/>
  </buttongroups>
 </ui>
