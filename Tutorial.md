@@ -77,7 +77,8 @@ Link default palette is located at **0xDD308**
 
 ### Getting Link sprite
 
-First you want to load the rom. Just click on the ... button
+First you want to load the rom. Just click on the **...** button.
+
 ![](https://skarsnik.github.io/SNESTilesKitten/webimage/openrom.png)
 
 SNESTilesKitten will set the rom property and show some information on the status bar.
@@ -88,7 +89,7 @@ Now we need to edit the Tiles location/property
 
 Check the **PC Start** radio button and fill the associated line edit with the starting value:  **80000**
 
-SNESTilesKitten does not offer something to set the end, only the size/lenght. After using a calculator it's **28671** bytes we need to put in size line edit.
+SNESTilesKitten does not offer something to set the end, only the size/lenght. After using a calculator it's **28672** bytes we need to put in size line edit.
 
 We don't choose a compression, since default is **None** then we set the **bpp** to **4**
 
