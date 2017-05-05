@@ -25,15 +25,17 @@ You can find a basic tutorial on the [tutorial page](https://skarsnik.github.io/
 
 # Command line
 
-SNESTilesKitten can be used from the command line. Just run the exececutable with the --help command.
+SNESTilesKitten offer a command line tool : SNESTinyKitten. Just run the executable with the --help command to learn more.
+
+Here an example of injecting a set of tiles.
 
 ```
-D:\Project\build-SNESTilesKitten-Desktop_Qt_5_7_0_MSVC2015_64bit-Debug\debug>SNESTilesKitten.exe --inject --copy --rom "D:\Project\Zelda - A Link to the Past.smc" --input "D:\Project\The Legend of Zelda - Link Sprites derppy.png" "D:\Project\SNESTilesKitten\Presets\The Legend of Zelda - Link Sprites.stk"
+D:\Project\SNESTilesKitten>SNESTinyKitten.exe --inject --copy --rom "D:\Project\Zelda - A Link to the Past.smc" --input "D:\Project\The Legend of Zelda - Link Sprites derppy.png" "D:\Project\SNESTilesKitten\Presets\The Legend of Zelda - Link Sprites.stk"
 ROM has SMC header
 ROM type is LoROM
 ROM Tile : THE LEGEND OF ZELDA
 Doing a copy of D:/Project/Zelda - A Link to the Past.smc to D:/Project/Zelda - A Link to the Past_copy.smc
 Injecting data
 Number of tile extracted from the PNG : 896
-28672  bytes of data writen to ROM
+28672  bytes of data writen to the ROM
 ```

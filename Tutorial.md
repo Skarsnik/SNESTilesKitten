@@ -11,7 +11,7 @@ If you are already familiar with SNES hacking you can skip to [SNESTilesKitten](
 
 ### Tiles, sprites and palette
 
-First to understand SNESTiles it helps to understand these 3 notions.
+First to understand SNESTilesKitten it helps to understand these 3 notions.
 
 A **tile** is generally a image of a fixed size that can be used directly (Like a small patch of grass), or in combinaison with other tiles to create a bigger image (like the trees in Zelda 3).
 
@@ -27,7 +27,7 @@ Palette in SNES programming vary from a set of 2 colors, to a set of 16 colors
 
 Here a very basic explanation on how SNES images work. 
 
-Tiles are stored in a 'clever' way since the number of colors is limited due to very small palette size. Instead of storing the color informations for each of its pixels, only a number is stored for a pixel. This number is a position in the palette (an index). That why it's was common for games to just change the palette used by a sprite to make a stronger version of an enemy, or simulate an amor upgrade (blue mail and red mail in Zelda3 are a just palette change)
+Tiles are stored in a 'clever' way since the number of colors is limited due to very small palette size. Instead of storing the color informations for each of its pixels, only a number is stored for a pixel. This number is a position in the palette (an index). That why it was common for games to just change the palette used by a sprite to make a stronger version of an enemy, or simulate an amor upgrade (blue mail and red mail in Zelda3 are a just palette change)
 
 The palette size used for the tile determine how the tile is stored. It leads to the term **bpp**. **bpp** mean Bitplan Per Pixel, without going into detail, the highter this value is, the more available colors you get. You have a maximum of 2**bpp (2 power bpp) colors in your palette. Typicaly graphics like a font will use 2 or 4 colors (so 1 or 2 bpp) and full sprites 16 colors (4 bpp). This is important to know since it change the way to read the tile in the ROM.
 
@@ -89,7 +89,7 @@ Now we need to edit the Tiles location/property
 
 Check the **PC Start** radio button and fill the associated line edit with the starting value:  **80000**
 
-SNESTilesKitten does not offer something to set the end, only the size/lenght. After using a calculator it's **28672** bytes we need to put in size line edit.
+SNESTilesKitten does not offer something to set the end, only the size/lenght. After using a calculator it's **28672** bytes we need to put in size line edit (the end location is included, so it's end - start + 1).
 
 We don't choose a compression, since default is **None** then we set the **bpp** to **4**
 
