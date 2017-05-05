@@ -22,7 +22,7 @@ void    showRomInfo(const ROMInfo& romInfo);
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
-    QCoreApplication::setApplicationName("SNESTilesKitten");
+    QCoreApplication::setApplicationName("SNESTinyKitten");
     QCoreApplication::setApplicationVersion(QString(__DATE__));
 
     if (processArgument(a))
