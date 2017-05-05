@@ -10,4 +10,5 @@ TEMPLATE = subdirs
 
 SUBDIRS += Gui.pro \
            Compressions \
-    Compressions/Compressions.pro
+    Compressions/Compressions.pro \
+    SNESTinyKitten

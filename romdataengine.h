@@ -17,7 +17,7 @@ public:
     QList<tile8>    extractTiles(TilePreset& preset);
     QVector<QRgb>   extractPalette(TilePreset& preset);
 
-    bool            injectTiles(const QList<tile8>& rawTiles, const TilePreset &preset);
+    unsigned int    injectTiles(const QList<tile8>& rawTiles, const TilePreset &preset);
     bool            injectPalette(const QVector<QRgb>& mPalette, const TilePreset& preset);
 
     ROMInfo romInfo;

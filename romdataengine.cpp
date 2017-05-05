@@ -113,7 +113,7 @@ QVector<QRgb> ROMDataEngine::extractPalette(TilePreset &preset)
     return mPalette;
 }
 
-bool ROMDataEngine::injectTiles(const QList<tile8> &rawTiles, const TilePreset& preset)
+unsigned int ROMDataEngine::injectTiles(const QList<tile8> &rawTiles, const TilePreset& preset)
 {
     QFile file(romFile);
     unsigned int filePos = getRomPosition(preset, preset.pcTilesLocation, preset.SNESTilesLocation);
@@ -137,11 +137,13 @@ bool ROMDataEngine::injectTiles(const QList<tile8> &rawTiles, const TilePreset& 
         free(tileS);
         tileStringPos += piko;
     }
+    unsigned int writeLenght = 0;
     QString compression = preset.compression;
     if (compression == "None")
     {
         file.write(tilesString, tileStringLenght);
         qDebug() << tileStringLenght << " bytes of data writen to ROM";
+        writeLenght = tileStringLenght;
     } else
     {
         qDebug() << "Using " << compression << " compression";
@@ -149,7 +151,7 @@ bool ROMDataEngine::injectTiles(const QList<tile8> &rawTiles, const TilePreset& 
         {
             qCritical() << "Compression : " << compression << m_compressionsInfo[compression].shortDescription << "does not support compression";
             free(tilesString);
-            return false;
+            return 0;
         }
         unsigned int compressedSize;
         char* compressedTiles = m_availableCompressions[compression]->compress(compression, tilesString, 0, tileStringLenght, &compressedSize);
@@ -157,16 +159,16 @@ bool ROMDataEngine::injectTiles(const QList<tile8> &rawTiles, const TilePreset& 
         {
             qCritical() << "Error with compression";
             free(tilesString);
-            return false;
+            return 0;
         }
         lastCompressSize = compressedSize;
         file.write(compressedTiles, compressedSize);
         free(compressedTiles);
-
+        writeLenght = compressedSize;
     }
     file.close();
     free(tilesString);
-    return true;
+    return writeLenght;
 }
 
 bool    ROMDataEngine::injectPalette(const QVector<QRgb>& mPalette, const TilePreset& preset)
