@@ -149,7 +149,7 @@ I recommand checking the **work on a copy of the rom file** to avoid erasing you
 
 And that it, you should should have a copy of your rom with the changed sprite.
 
-Here Link changed sprite on snes9x
+Here the patched rom on snes9x
 
 
 ![](https://skarsnik.github.io/SNESTilesKitten/webimage/alttpgamederpy.png)
