@@ -69,12 +69,19 @@ QList<tile8> ROMDataEngine::extractTiles(TilePreset &preset)
     QByteArray qdata = romQFile.read(preset.length);
     char*   data = qdata.data();
     QString compressionSelected = preset.compression;
+    lastUnCompressSize = 0;
     if (compressionSelected != "None") {
         qDebug() << "Using " << compressionSelected << " compression";
-        data = m_availableCompressions[compressionSelected]->unCompress(compressionSelected, data, 0, &size, &lastCompressedSize);
+        data = m_availableCompressions[compressionSelected]->unCompress(compressionSelected, data, 0, preset.length, &size, &lastCompressedSize);
         if (data == NULL)
+        {
+            lastDecompressionError = m_availableCompressions[compressionSelected]->decompressionError();
             return rawTiles;
+        }
+        lastDecompressionError = QString();
         lastUnCompressSize = size;
+    } else {
+        lastDecompressionError = QString();
     }
     qDebug() << "Size : " << size;
     unsigned tileCpt = 0;
@@ -147,6 +154,7 @@ unsigned int ROMDataEngine::injectTiles(const QList<tile8> &rawTiles, const Tile
         file.write(tilesString, tileStringLenght);
         qDebug() << tileStringLenght << " bytes of data writen to ROM";
         writeLenght = tileStringLenght;
+        lastCompressionError = QString();
     } else
     {
         qDebug() << "Using " << compression << " compression";
@@ -161,8 +169,11 @@ unsigned int ROMDataEngine::injectTiles(const QList<tile8> &rawTiles, const Tile
         if (compressedTiles == NULL)
         {
             qCritical() << "Error with compression";
+            lastCompressionError = m_availableCompressions[compression]->compressionError();
             free(tilesString);
             return 0;
+        } else {
+            lastCompressionError = QString();
         }
         lastCompressSize = compressedSize;
         file.write(compressedTiles, compressedSize);

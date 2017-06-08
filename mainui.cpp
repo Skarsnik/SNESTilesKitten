@@ -101,9 +101,9 @@ bool MainUI::extractTiles()
 {
     dataEngine.overridenHeaderInfo = romHasHeader;
     rawTiles = dataEngine.extractTiles(currentSet);
-    if (currentSet.compression != "None")
+    if (currentSet.compression != "None" && dataEngine.lastUnCompressSize != 0)
     {
-        ui->sizeLineEdit->setText(QString::number(dataEngine.lastCompressedSize));
+        ui->sizeLineEdit->setText(QString::number(dataEngine.lastUnCompressSize));
         ui->statusBar->showMessage("Tiles presetset size get ajusted to the compressed string size");
     }
     return !rawTiles.isEmpty();

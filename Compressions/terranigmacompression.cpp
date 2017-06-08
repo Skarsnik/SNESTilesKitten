@@ -19,17 +19,30 @@ QList<CompressionInfo> TerranigmaCompression::compressionList()
     return toret;
 }
 
-char *TerranigmaCompression::compress(QString name, const char *data, unsigned int start, unsigned int lenght, unsigned int* compressedSize)
+QString TerranigmaCompression::compressionError()
+{
+    return QString();
+}
+
+QString TerranigmaCompression::decompressionError()
+{
+    return QString();
+}
+
+char *TerranigmaCompression::compress(QString name, const char *data, const size_t start, const unsigned int lenght, unsigned int* compressedSize)
 {
     return NULL;
 }
 
-char *TerranigmaCompression::unCompress(QString name, const char* data, const unsigned int start, unsigned int* uncompressedSize, unsigned int* compressedLength)
+char *TerranigmaCompression::unCompress(QString name, const char* data, const size_t start, const unsigned int lenght, unsigned int* uncompressedSize, unsigned int* compressedLength)
 {
     if (name == "Terranigma") {
         Comp    terraComp;
         terraComp.Init((u8*) data);
-        return (char*) terraComp.UncompressData(start, uncompressedSize);
+        unsigned int size = lenght;
+        char* toret = (char*) terraComp.UncompressData(start, &size);
+        *uncompressedSize = size;
+        return toret;
     }
     return NULL;
 }

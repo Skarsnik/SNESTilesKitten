@@ -8,9 +8,10 @@ type=LoROM
 [tiles]
 pc_location=39e2e2
 snes_location=0
-length=28671
+length=8192
 bpp=4
 compression=Terranigma
+pattern=normal
 
 [tiles_arrangement]
 tiles_per_row=16

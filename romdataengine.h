@@ -20,12 +20,14 @@ public:
     unsigned int    injectTiles(const QList<tile8>& rawTiles, const TilePreset &preset);
     bool            injectPalette(const QVector<QRgb>& mPalette, const TilePreset& preset);
 
-    ROMInfo romInfo;
-    bool    overrideHeaderInfo;
-    bool    overridenHeaderInfo;
+    ROMInfo         romInfo;
+    bool            overrideHeaderInfo;
+    bool            overridenHeaderInfo;
     unsigned int    lastUnCompressSize;
     unsigned int    lastCompressedSize;
     unsigned int    lastCompressSize;
+    QString         lastCompressionError;
+    QString         lastDecompressionError;
 
     QString getRomFile() const;
     void setRomFile(const QString &value);
