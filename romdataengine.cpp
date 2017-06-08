@@ -77,10 +77,13 @@ QList<tile8> ROMDataEngine::extractTiles(TilePreset &preset)
         lastUnCompressSize = size;
     }
     qDebug() << "Size : " << size;
+    unsigned tileCpt = 0;
     for (unsigned int tilePos = 0; tilePos < size; tilePos += preset.bpp * 8)
     {
         tile8   newTile = unpack_bpp_tile(data, tilePos, preset.bpp);
+        newTile.id = tileCpt;
         rawTiles.append(newTile);
+        tileCpt++;
     }
     if (compressionSelected != "None")
         free(data);
@@ -244,4 +247,11 @@ unsigned int ROMDataEngine::getRomPosition(const TilePreset &preset, unsigned in
             filePos += 0x200;
     }
     return filePos;
+}
+
+QDebug &operator<<(QDebug debug, const tile8 &tile)
+{
+    QDebugStateSaver saver(debug);
+    debug.nospace() << "{T:" << tile.id << "}";
+    return debug;
 }

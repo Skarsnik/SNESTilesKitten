@@ -43,8 +43,6 @@ private slots:
 
     void on_tileZoomHorizontalSlider_valueChanged(int value);
 
-    void on_tilesPerRowSpinBox_editingFinished();
-
     void on_presetOpenPushButton_clicked();
 
     void on_presetSavePushButton_clicked();
@@ -54,6 +52,8 @@ private slots:
     void on_pngImportpushButton_clicked();
 
     void on_compressionComboBox_currentIndexChanged(const QString &arg1);
+
+    void on_tilePatternComboBox_currentIndexChanged(const QString &arg1);
 
 private:
     Ui::MainUI      *ui;
@@ -71,8 +71,6 @@ private:
     ROMDataEngine   dataEngine;
 
     QList<tile8>    rawTiles;
-    QList<QImage>   images;
-    char*           rawData;
     QVector<QRgb>   mPalette;
 
     QMap<QString, CompressionInfo>    compressInfos;
@@ -82,9 +80,8 @@ private:
     void    updatePresetWithUi();
     void    updateUiWithPreset();
 
-    void    updateGTileView();
+    void    rebuildGTileView();
     bool    extractTiles();
-    void    createImageList();
     void    buildTileScene();
     void    buildPaletteScene();
     void    setGrayscalePalette(unsigned int paletteSize = 16);

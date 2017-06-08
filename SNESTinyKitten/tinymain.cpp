@@ -146,7 +146,7 @@ void    extract()
     QVector<QRgb> mPalette = dataEngine.extractPalette(preset);
     if (pngFile)
     {
-        QImage ImgExport = mergeTilesToImage(rawTiles, mPalette, preset.tilesPerRow);
+        QImage ImgExport = mergeTilesToImage(rawTiles, mPalette, preset.tilesPattern);
         fprintf(stdout, "Writing to %s\n", qPrintable(externalFile));
         saveToPNG(ImgExport, externalFile);
     }

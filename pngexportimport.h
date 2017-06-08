@@ -5,8 +5,9 @@
 #include <QImage>
 #include <QRgb>
 #include <lowlevelstuff/src/tile.h>
+#include "tilespattern.h"
 
-QImage  mergeTilesToImage(const QList<tile8> tiles, const QVector<QRgb> &palette, const unsigned int tilesPerRow);
+QImage  mergeTilesToImage(const QList<tile8> tiles, const QVector<QRgb> &palette, const TilesPattern& tilesPattern);
 bool    saveToPNG(const QImage& image, QString path);
 
 QList<tile8> tilesFromPNG(const QString file);

@@ -4,19 +4,22 @@
 #include <QGraphicsScene>
 #include <QObject>
 #include "lowlevelstuff/src/tile.h"
+#include "tilespattern.h"
 
 class GraphicsTilesScene : public QGraphicsScene
 {
 public:
     GraphicsTilesScene(QObject *parent = 0);
-    void    buildScene(const QList<QImage>& images, const QList<tile8>& tiles);
+    void    buildScene(const QList<tile8>& tiles, const QVector<QRgb> mPalette, const TilesPattern& tp);
     void    updateScene();
     void    setTilesZoom(unsigned int tileZoom);
-    void    setTilesPerRow(unsigned int value);
+    void    setTilesPattern(TilesPattern tp);
 
 private:
+    QList<tile8> allTiles;
     unsigned int tilesZoom;
-    unsigned int tilesPerRow;
+    TilesPattern    tilesPattern;
+    QMap<unsigned int, QPixmap>  imagesCache;
 
 };
 

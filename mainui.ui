@@ -336,13 +336,7 @@ PC locations all assume the rom does not have the SMC header</string>
               </widget>
              </item>
              <item>
-              <widget class="QComboBox" name="compressionComboBox">
-               <item>
-                <property name="text">
-                 <string>None</string>
-                </property>
-               </item>
-              </widget>
+              <widget class="QComboBox" name="compressionComboBox"/>
              </item>
             </layout>
            </item>
@@ -738,20 +732,16 @@ PC locations all assume the rom does not have the SMC header</string>
          </spacer>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_13">
+         <layout class="QVBoxLayout" name="verticalLayout_10">
           <item>
            <widget class="QLabel" name="label_8">
             <property name="text">
-             <string>Tiles show per row</string>
+             <string>Tiles pattern :</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QSpinBox" name="tilesPerRowSpinBox">
-            <property name="value">
-             <number>8</number>
-            </property>
-           </widget>
+           <widget class="QComboBox" name="tilePatternComboBox"/>
           </item>
          </layout>
         </item>
@@ -843,9 +833,9 @@ PC locations all assume the rom does not have the SMC header</string>
  <connections/>
  <buttongroups>
   <buttongroup name="tilesLocationButtonGroup"/>
-  <buttongroup name="buttonGroup"/>
   <buttongroup name="paletteGroupButton"/>
   <buttongroup name="buttonGroup_2"/>
+  <buttongroup name="buttonGroup"/>
   <buttongroup name="headerButtonGroup"/>
  </buttongroups>
 </ui>

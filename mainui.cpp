@@ -45,11 +45,25 @@ MainUI::MainUI(QWidget *parent) :
 
     connect(ui->headerButtonGroup, SIGNAL(buttonClicked(int)), this, SLOT(on_headerButtonGroup_clicked(int)));
     compressInfos = ROMDataEngine::compressionInfos();
+    unsigned int cpt = 0;
+    ui->compressionComboBox->insertItem(cpt, "None");
+    ui->compressionComboBox->setItemData(cpt, "No compression", Qt::ToolTipRole);
+    cpt++;
     foreach(const QString& key, ROMDataEngine::availableCompressions().keys())
     {
-            ui->compressionComboBox->addItem(key);
+            ui->compressionComboBox->insertItem(cpt, key);
+            ui->compressionComboBox->setItemData(cpt, compressInfos[key].description, Qt::ToolTipRole);
+            cpt++;
     }
-    if (0) {
+    QMap<QString, TilesPattern>  patterns = TilesPattern::Patterns();
+    cpt = 0;
+    foreach (const QString& key, patterns.keys()) {
+        ui->tilePatternComboBox->insertItem(cpt, key);
+        ui->tilePatternComboBox->setItemData(cpt, patterns[key].description, Qt::ToolTipRole);
+        cpt++;
+    }
+    ui->tilePatternComboBox->setCurrentText("normal");
+    if (1) {
         openRom("D:\\Emulation\\Zelda - A Link to the Past\\Zelda - A Link to the Past.smc");
         loadPreset("D:\\Project\\SNESTilesKitten\\Presets\\The Legend of Zelda - Link Sprites.stk");
     }
@@ -103,37 +117,9 @@ bool MainUI::extractPalette()
 }
 
 
-void MainUI::createImageList()
-{
-    images.clear();
-    foreach (const tile8 tile, rawTiles)
-    {
-        QImage newImage(8, 8, QImage::Format_Indexed8);
-        newImage.setColorCount(mPalette.size());
-        for (int i = 0; i < mPalette.size(); i++)
-        {
-            newImage.setColor(i, mPalette[i]);
-        }
-        for (int i = 0; i < 8; i++)
-        {
-            for (int j = 0; j < 8; j++)
-               newImage.setPixel(i, j, tile.data[i + j * 8]);
-        }
-        /*show_tile8(tile);
-        for (int i = 0; i < 8; i++)
-        {
-            for (int j = 0; j < 8; j++)
-                printf("%u, ", (unsigned int) newImage.pixelIndex(i, j));
-            printf("\n");
-        }*/
-        images.append(newImage);
-    }
-}
-
 void MainUI::buildTileScene()
 {
-   tileScene->setTilesPerRow(tilesPerRow);
-   tileScene->buildScene(images, rawTiles);
+   tileScene->buildScene(rawTiles, mPalette, currentSet.tilesPattern);
 }
 
 void MainUI::buildPaletteScene()
@@ -193,7 +179,7 @@ void MainUI::on_headerButtonGroup_clicked(int)
     romHasHeader = ui->headerRadioButton->isChecked();
 }
 
-void MainUI::updateGTileView()
+void MainUI::rebuildGTileView()
 {
     if (currentSet.SNESPaletteLocation == 0 && currentSet.pcPaletteLocation == 0)
         setGrayscalePalette(qPow(2, currentSet.bpp));
@@ -203,7 +189,6 @@ void MainUI::updateGTileView()
         ui->statusBar->showMessage("Error extracting tiles");
         return;
     }
-    createImageList();
     buildTileScene();
     buildPaletteScene();
 }
@@ -222,7 +207,7 @@ void MainUI::on_palettePCLocationRadioButton_toggled(bool checked)
 void MainUI::on_refreshPushButton_clicked()
 {
     updatePresetWithUi();
-    updateGTileView();
+    rebuildGTileView();
 }
 
 void MainUI::on_paletteGrayRadioButton_toggled(bool checked)
@@ -276,7 +261,7 @@ bool MainUI::loadPreset(const QString& presetFile)
         lastPresetDirectory = QFileInfo(presetFile).dir().absolutePath();
         ui->statusBar->showMessage("Preset file " + QFileInfo(presetFile).fileName() + " loaded - " + currentSet.name);
         if (!romFile.isEmpty())
-            updateGTileView();
+            rebuildGTileView();
         return true;
     } else {
         qDebug() << "Error loading preset";
@@ -315,8 +300,7 @@ void MainUI::updateUiWithPreset()
         case 4:
             ui->bpp4RadioButton->setChecked(true);
     }
-    ui->tilesPerRowSpinBox->setValue(currentSet.tilesPerRow);
-    tilesPerRow = currentSet.tilesPerRow;
+    ui->tilePatternComboBox->setCurrentText(currentSet.tilesPattern.name);
     if (currentSet.SNESPaletteLocation != 0)
     {
         ui->paletteSNESLocationRadioButton->toggle();
@@ -379,11 +363,6 @@ void MainUI::on_tileZoomHorizontalSlider_valueChanged(int value)
     tileScene->setTilesZoom(value);
 }
 
-void MainUI::on_tilesPerRowSpinBox_editingFinished()
-{
-    tilesPerRow = ui->tilesPerRowSpinBox->value();
-    tileScene->setTilesPerRow(tilesPerRow);
-}
 
 void MainUI::on_presetOpenPushButton_clicked()
 {
@@ -398,7 +377,6 @@ void MainUI::on_presetOpenPushButton_clicked()
 void MainUI::on_presetSavePushButton_clicked()
 {
     bool    ok;
-    currentSet.tilesPerRow = tilesPerRow;
     QString presetName;
     if (!currentSet.name.isEmpty())
         presetName = currentSet.name;
@@ -431,7 +409,7 @@ void MainUI::on_pngExportPushButton_clicked()
     QString pngFile = QFileDialog::getSaveFileName(this, tr("Exported PNG File"), lastPNGDirectory + "/" + exportName + ".png", tr("PNG file, (*.png)"));
     if (!pngFile.isEmpty())
     {
-        QImage img = mergeTilesToImage(rawTiles, mPalette, tilesPerRow);
+        QImage img = mergeTilesToImage(rawTiles, mPalette, currentSet.tilesPattern);
         if (saveToPNG(img, pngFile))
         {
             lastPNGDirectory = QFileInfo(pngFile).dir().absolutePath();
@@ -490,7 +468,6 @@ void MainUI::on_pngImportpushButton_clicked()
                 ui->statusBar->showMessage("Import successfull");
             }
             rawTiles = importedRawTiles;
-            createImageList();
             buildTileScene();
         }
     }
@@ -503,4 +480,10 @@ void MainUI::on_compressionComboBox_currentIndexChanged(const QString &arg1)
     else
         ui->pngImportpushButton->setEnabled(false);
 
+}
+
+void MainUI::on_tilePatternComboBox_currentIndexChanged(const QString &arg1)
+{
+    currentSet.tilesPattern = TilesPattern::pattern(arg1);
+    tileScene->buildScene(rawTiles, mPalette, currentSet.tilesPattern);
 }

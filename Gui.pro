@@ -27,7 +27,8 @@ SOURCES += main.cpp\
     romdataengine.cpp \
     graphicstileitem.cpp \
     injectdialog.cpp \
-    graphicstilesscene.cpp
+    graphicstilesscene.cpp \
+    tilespattern.cpp
 
 HEADERS  += mainui.h \
     tilepreset.h \
@@ -43,7 +44,8 @@ HEADERS  += mainui.h \
     romdataengine.h \
     graphicstileitem.h \
     injectdialog.h \
-    graphicstilesscene.h
+    graphicstilesscene.h \
+    tilespattern.h
 
 FORMS    += mainui.ui \
     presetsavedialog.ui \

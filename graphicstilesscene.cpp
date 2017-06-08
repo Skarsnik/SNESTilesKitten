@@ -1,44 +1,70 @@
 #include "graphicstileitem.h"
 #include "graphicstilesscene.h"
+#include <QDebug>
 
 GraphicsTilesScene::GraphicsTilesScene(QObject* parent) : QGraphicsScene(parent)
 {
     tilesZoom = 30;
 }
 
-void GraphicsTilesScene::buildScene(const QList<QImage> &images, const QList<tile8> &tiles)
+void GraphicsTilesScene::buildScene(const QList<tile8> &tiles, const QVector<QRgb> mPalette, const TilesPattern &tp)
 {
+    QVector<QVector<tile8> > arrangedTiles = TilesPattern::transform(tp, tiles);
+    tilesPattern = tp;
+    allTiles = tiles;
     clear();
     setBackgroundBrush(Qt::blue);
-    unsigned int cpt = 0;
-    foreach(QImage image, images)
+    for (unsigned int j = 0; j < arrangedTiles.size(); j++)
     {
-        QPixmap m;
-        m.convertFromImage(image);
-        GraphicsTileItem *newTileItem = new GraphicsTileItem(m, tiles[cpt]);
-        addItem(newTileItem);
-        cpt++;
+        for (unsigned int i = 0; i < arrangedTiles[0].size(); i++)
+        {
+            tile8 tile = arrangedTiles[j][i];
+            QImage newImage(8, 8, QImage::Format_Indexed8);
+            newImage.setColorCount(mPalette.size());
+            for (int i = 0; i < mPalette.size(); i++)
+            {
+                newImage.setColor(i, mPalette[i]);
+            }
+            for (int i = 0; i < 8; i++)
+            {
+                for (int j = 0; j < 8; j++)
+                   newImage.setPixel(i, j, tile.data[i + j * 8]);
+            }
+            QPixmap m;
+            m.convertFromImage(newImage);
+            imagesCache[tile.id] = m;
+            GraphicsTileItem *newTileItem = new GraphicsTileItem(m, tile);
+            addItem(newTileItem);
+            newTileItem->tileZoom = tilesZoom;
+            newTileItem->setPos(i * newTileItem->boundingRect().width() + i, j * newTileItem->boundingRect().width() + j);
+        }
     }
-    updateScene();
+    unsigned max_w = items()[0]->boundingRect().width() * arrangedTiles[0].size() + arrangedTiles[0].size();
+    unsigned max_h = items()[0]->boundingRect().width() * arrangedTiles.size() + arrangedTiles.size();
+    setSceneRect(QRect(0, 0, max_w, max_h));
 }
 
 void GraphicsTilesScene::updateScene()
 {
-    unsigned int i = 0;
-    unsigned int j = 0;
-    foreach(QGraphicsItem* item, items(Qt::AscendingOrder))
+    qDebug() << "Update scene";
+    QVector<QVector<tile8> > arrangedTiles = TilesPattern::transform(tilesPattern, allTiles);
+    unsigned int itemCpt = 0;
+    for (unsigned int j = 0; j < arrangedTiles.size(); j++)
     {
-        GraphicsTileItem* tItem = (GraphicsTileItem*) item;
-        tItem->tileZoom = tilesZoom;
-        tItem->setPos(i * tItem->boundingRect().width() + i, j * tItem->boundingRect().width() + j);
-        i++;
-        if (i % tilesPerRow == 0) {
-            j++;
-            i = 0;
+        for (unsigned int i = 0; i < arrangedTiles[0].size(); i++)
+        {
+            tile8 tile = arrangedTiles[j][i];
+            QPixmap m = imagesCache[tile.id];
+            GraphicsTileItem *tileItem = (GraphicsTileItem*) items()[itemCpt];
+            tileItem->image = m;
+            tileItem->rawTile = tile;
+            tileItem->tileZoom = tilesZoom;
+            tileItem->setPos(i * tileItem->boundingRect().width() + i, j * tileItem->boundingRect().width() + j);
+            itemCpt++;
         }
     }
-    unsigned max_w = items()[0]->boundingRect().width() * tilesPerRow + tilesPerRow - 1;
-    unsigned max_h = items()[0]->boundingRect().width() * j + j;
+    unsigned max_w = items()[0]->boundingRect().width() * arrangedTiles[0].size() + arrangedTiles[0].size();
+    unsigned max_h = items()[0]->boundingRect().width() * arrangedTiles.size() + arrangedTiles.size();
     setSceneRect(QRect(0, 0, max_w, max_h));
 }
 
@@ -50,9 +76,8 @@ void GraphicsTilesScene::setTilesZoom(unsigned int tileZoom)
         updateScene();
 }
 
-void GraphicsTilesScene::setTilesPerRow(unsigned int value)
+void GraphicsTilesScene::setTilesPattern(TilesPattern tp)
 {
-    tilesPerRow = value;
-    if (!items().isEmpty())
-        updateScene();
+    tilesPattern = tp;
 }
+

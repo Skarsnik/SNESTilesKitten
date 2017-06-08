@@ -2,12 +2,13 @@
 #include <QDebug>
 
 
-QImage mergeTilesToImage(const QList<tile8> tiles, const QVector<QRgb>& palette, const unsigned int tilesPerRow)
+QImage mergeTilesToImage(const QList<tile8> tiles, const QVector<QRgb>& palette, const TilesPattern& tilesPattern)
 {
-    unsigned int nbTileCol = (tiles.size() + 0.5) / tilesPerRow;
-    unsigned int height = nbTileCol * 8;
+    QVector<QVector<tile8> > arrangedTiles = TilesPattern::transform(tilesPattern, tiles);
+    unsigned tHeight = arrangedTiles.size();
+    unsigned tWidth = arrangedTiles[0].size();
     //qDebug() << height;
-    QImage newImage(8 * tilesPerRow, height, QImage::Format_Indexed8);
+    QImage newImage(tWidth * 8, tHeight * 8, QImage::Format_Indexed8);
     newImage.setColorCount(palette.size());
     for (unsigned int i = 0; i < palette.size(); i++)
     {
@@ -15,31 +16,20 @@ QImage mergeTilesToImage(const QList<tile8> tiles, const QVector<QRgb>& palette,
     }
     QString plop = "";
 
-    unsigned int tileNum = 0;
-    unsigned int colTile = 0;
-    foreach(const tile8& tile, tiles)
+
+
+    for (unsigned int j = 0; j < tHeight; j++)
     {
-        unsigned int pixPos = 0;
-        unsigned int yPos = 0;
-        for (unsigned int i = 0; i < 64; i++)
+        for (unsigned int i = 0; i < tWidth; i++)
         {
-            QPoint p(pixPos + (tileNum % tilesPerRow) * 8, colTile * 8 + yPos);
-            newImage.setPixel(p,  tile.data[i]);
-            plop.append(QString("[%1, %2] ").arg(p.x()).arg(p.y()));
-            pixPos++;
-            if (pixPos % 8 == 0)
+            tile8& tile = arrangedTiles[j][i];
+            for (unsigned int tPos = 0; tPos < 64; tPos++)
             {
-                pixPos = 0;
-                yPos++;
+                QPoint p(i * 8 + (tPos % 8), j * 8 + tPos / 8);
+                newImage.setPixel(p, tile.data[tPos]);
             }
         }
-        //qDebug() << plop;
-        plop = "";
-        tileNum++;
-        if (tileNum % tilesPerRow == 0)
-            colTile++;
     }
-    //qDebug() << "Hello";
     return newImage;
 }
 

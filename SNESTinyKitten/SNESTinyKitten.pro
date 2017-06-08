@@ -18,4 +18,5 @@ SOURCES += ../romdataengine.cpp \
     ../lowlevelstuff/src/palette.c \
     ../rominfo.cpp \
     ../pngexportimport.cpp \
+    ../tilespattern.cpp \
     tinymain.cpp

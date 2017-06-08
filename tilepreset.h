@@ -2,6 +2,7 @@
 #define TILEPRESET_H
 
 #include <QString>
+#include "tilespattern.h"
 
 class TilePreset
 {
@@ -14,6 +15,7 @@ public:
     QString name;
     QString romName;
     QString romType;
+    TilesPattern    tilesPattern;
 
     unsigned int    SNESTilesLocation;
     unsigned int    pcTilesLocation;
@@ -21,7 +23,6 @@ public:
     unsigned int    pcPaletteLocation;
     bool            paletteNoZeroColor;
     unsigned int    length;
-    unsigned int    tilesPerRow;
 
     unsigned int bpp;
     QString compression;

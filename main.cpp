@@ -1,5 +1,6 @@
 #include "mainui.h"
 #include <QApplication>
+#include <QDebug>
 
 int main(int argc, char *argv[])
 {
@@ -22,8 +23,27 @@ int main(int argc, char *argv[])
     }
 #endif
     pluginsDir.cd("plugins");
+    QDir patternDir = qApp->applicationDirPath();
+    if (patternDir.dirName().toLower() == "debug" || patternDir.dirName().toLower() == "release")
+    {
+        patternDir.cdUp();
+        patternDir.cdUp();
+        patternDir.cd("SNESTilesKitten");
+    }
+    patternDir.cd("TilesPatterns");
     ROMDataEngine::loadCompressionPlugins(pluginsDir);
-
+    TilesPattern::loadPatterns(patternDir);
+    /*QList<tile8> someTiles;
+    for (unsigned int i = 0; i < 32; i++)
+    {
+        tile8 t;
+        t.id = i;
+        someTiles.append(t);
+    }
+    qDebug() << TilesPattern::transform(TilesPattern::pattern("normal"), someTiles);
+    qDebug() << TilesPattern::transform(TilesPattern::pattern("32x32 B (4x4)"), someTiles);
+    qDebug() << TilesPattern::transform(TilesPattern::pattern("32x32 A (2x2*4)"), someTiles);
+    return 0;*/
     MainUI w;
     w.show();
     return a.exec();

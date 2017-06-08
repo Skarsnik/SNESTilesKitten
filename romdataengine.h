@@ -43,4 +43,6 @@ private:
 
 };
 
+QDebug &operator<<(QDebug debug, const tile8 &tile);
+
 #endif // ROMDATAENGINE_H
