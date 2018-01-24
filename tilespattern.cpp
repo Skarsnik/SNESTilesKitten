@@ -123,6 +123,36 @@ QVector<QVector<tile8> > TilesPattern::transform(const QList<tile8>& tiles) cons
     return toret;
 }
 
+QList<tile8> TilesPattern::reverse(const QList<tile8> &tiles) const
+{
+    unsigned int repeatOffsetY = 0;
+    unsigned int repeatOffsetX = 0;
+    unsigned int tVectHeight = transformVector.size();
+    unsigned int tVectWidth = transformVector[0].size();
+    unsigned int repeat = 0;
+    unsigned int nbTransPerRow = tilesPerRow / tVectWidth;
+    unsigned int nbTiles = tiles.size();
+    QVector<tile8>    toretVec(tiles.size());
+
+    for (unsigned int i = 0; i < nbTiles; i++)
+    {
+        unsigned int lineNb = i / tilesPerRow;
+        unsigned int lineInTab = lineNb % tVectHeight;
+        unsigned int colInTab = i % tVectWidth;
+        unsigned int tileNb = transformVector[lineInTab][colInTab];
+
+        unsigned int lineBlock = i / (nbTransPerRow * numberOfTiles);
+        unsigned int blockNB = (i % (nbTransPerRow * numberOfTiles) % tilesPerRow) / tVectWidth;
+
+        qDebug() << colInTab << lineInTab << " = " << tileNb;
+        //unsigned int pos = tileNb + ((i % tilesPerRow) / nbTransPerRow) * numberOfTiles;
+        unsigned int pos = tileNb + (lineBlock + blockNB) * numberOfTiles;
+        qDebug() << i << "Goes to : " << pos;
+        toretVec[pos] = tiles[i];
+    }
+    return toretVec.toList();
+}
+
 QVector<QVector<tile8> > TilesPattern::transform(const TilesPattern &pattern, const QList<tile8>& tiles)
 {
     return pattern.transform(tiles);
@@ -131,5 +161,10 @@ QVector<QVector<tile8> > TilesPattern::transform(const TilesPattern &pattern, co
 QVector<QVector<tile8> > TilesPattern::transform(const QString id, const QList<tile8>& tiles)
 {
     return m_Patterns[id].transform(tiles);
+}
+
+QList<tile8> TilesPattern::reverse(const TilesPattern &pattern, const QList<tile8> &tiles)
+{
+    return pattern.reverse(tiles);
 }
 

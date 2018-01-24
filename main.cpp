@@ -34,15 +34,24 @@ int main(int argc, char *argv[])
     ROMDataEngine::loadCompressionPlugins(pluginsDir);
     TilesPattern::loadPatterns(patternDir);
     /*QList<tile8> someTiles;
-    for (unsigned int i = 0; i < 32; i++)
+    for (unsigned int i = 0; i < 64; i++)
     {
         tile8 t;
         t.id = i;
         someTiles.append(t);
     }
-    qDebug() << TilesPattern::transform(TilesPattern::pattern("normal"), someTiles);
+    /*qDebug() << TilesPattern::transform(TilesPattern::pattern("normal"), someTiles);
     qDebug() << TilesPattern::transform(TilesPattern::pattern("32x32 B (4x4)"), someTiles);
     qDebug() << TilesPattern::transform(TilesPattern::pattern("32x32 A (2x2*4)"), someTiles);
+    QVector<QVector<tile8> > tt = TilesPattern::transform(TilesPattern::pattern("32x32 B (4x4)"), someTiles);
+    QList<tile8> l;
+    foreach (QVector<tile8> v, tt)
+    {
+        qDebug() << v;
+        l.append(v.toList());
+    }
+    qDebug() << "Reverse" << l;
+    qDebug() << TilesPattern::reverse(TilesPattern::pattern("32x32 B (4x4)"), l);
     return 0;*/
     MainUI w;
     w.show();

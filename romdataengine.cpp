@@ -66,6 +66,9 @@ QList<tile8> ROMDataEngine::extractTiles(TilePreset &preset)
     filePos = getRomPosition(preset, preset.pcTilesLocation, preset.SNESTilesLocation);
     qDebug() << "Location" << QString::number(filePos, 16);
     romQFile.seek(filePos);
+    unsigned int readLength = 5000;
+    if (preset.length > readLength || romQFile.size() < readLength)
+        readLength = preset.length;
     QByteArray qdata = romQFile.read(preset.length);
     char*   data = qdata.data();
     QString compressionSelected = preset.compression;

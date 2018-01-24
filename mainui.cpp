@@ -453,6 +453,7 @@ void MainUI::on_pngImportpushButton_clicked()
             qDebug() << "Importing stuff";
             updatePresetWithUi();
             QList<tile8>    importedRawTiles = tilesFromPNG(pngFile);
+            importedRawTiles = TilesPattern::reverse(currentSet.tilesPattern, importedRawTiles);
             dataEngine.injectTiles(importedRawTiles, currentSet);
             if ((currentSet.pcPaletteLocation != 0 || currentSet.SNESPaletteLocation != 0) && iDiag.useImagePalette)
             {

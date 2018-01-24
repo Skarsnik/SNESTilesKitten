@@ -22,8 +22,10 @@ public:
     static  QMap<QString, TilesPattern> Patterns();
     static  QVector<QVector<tile8> >    transform(const TilesPattern& pattern, const QList<tile8> &tiles);
     static  QVector<QVector<tile8> >    transform(const QString id, const QList<tile8> &tiles);
+    static  QList<tile8>                reverse(const TilesPattern& pattern, const QList<tile8>& tiles);
 protected:
     QVector<QVector<tile8> > transform(const QList<tile8> &tiles) const;
+    QList<tile8>             reverse(const QList<tile8>& tiles) const;
     QVector<QVector<int> > transformVector;
 private:
     static QMap<QString, TilesPattern> m_Patterns;

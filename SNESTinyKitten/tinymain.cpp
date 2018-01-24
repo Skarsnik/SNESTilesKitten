@@ -183,6 +183,7 @@ void    inject()
     if (pngFile)
     {
         rawTiles = tilesFromPNG(externalFile);
+        rawTiles = TilesPattern::reverse(preset.tilesPattern, rawTiles);
         fprintf(stdout, "Number of tile extracted from the PNG : %d\n", rawTiles.size());
         QVector<QRgb> mPalette = paletteFromPNG(externalFile);
         fprintf(stdout, "Preset file says lenght is : %d\n", preset.length);
