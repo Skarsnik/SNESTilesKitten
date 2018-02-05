@@ -32,8 +32,10 @@ public:
     QString getRomFile() const;
     void setRomFile(const QString &value);
 
-    static QMap<QString, CompressionInterface *> availableCompressions();
-    static QMap<QString, CompressionInfo>        compressionInfos();
+    static QMap<QString, CompressionInterface *>    availableCompressions();
+    static QMap<QString, CompressionInfo>           compressionInfos();
+    static unsigned int                             pcToSnes(unsigned int pcAddr, QString romType);
+    static unsigned int                             snesToPC(unsigned int romAddr, QString romType);
 
 private:
     unsigned int getRomPosition(const TilePreset &preset, unsigned int directAddr, unsigned int snesAddr);

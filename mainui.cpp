@@ -44,6 +44,7 @@ MainUI::MainUI(QWidget *parent) :
     buildPaletteScene();
 
     connect(ui->headerButtonGroup, SIGNAL(buttonClicked(int)), this, SLOT(on_headerButtonGroup_clicked(int)));
+    connect(ui->graphicsView, SIGNAL(tileUnderCursorChanged()), this, SLOT(onTileUnderCursorChanged()));
     compressInfos = ROMDataEngine::compressionInfos();
     unsigned int cpt = 0;
     ui->compressionComboBox->insertItem(cpt, "None");
@@ -63,10 +64,10 @@ MainUI::MainUI(QWidget *parent) :
         cpt++;
     }
     ui->tilePatternComboBox->setCurrentText("normal");
-    if (1) {
+    /*if (1) {
         openRom("D:\\Emulation\\Zelda - A Link to the Past\\Zelda - A Link to the Past.smc");
         loadPreset("D:\\Project\\SNESTilesKitten\\Presets\\The Legend of Zelda - Link Sprites.stk");
-    }
+    }*/
     m_settings = new QSettings("skarsnik.nyo.fr", "SNESTilesKitten");
     if (m_settings->contains("windowGeometry"))
     {
@@ -83,6 +84,20 @@ MainUI::MainUI(QWidget *parent) :
 MainUI::~MainUI()
 {
     delete ui;
+}
+
+void MainUI::onTileUnderCursorChanged()
+{
+    //qDebug() << "Tile under cursor : " << ui->graphicsView->tileUnderCursor();
+    tile8 tile = ui->graphicsView->tileUnderCursor()->rawTile;
+    int pcStart;
+    if (currentSet.pcTilesLocation > 0)
+        pcStart = currentSet.pcTilesLocation;
+    else
+        pcStart = ROMDataEngine::snesToPC(currentSet.SNESTilesLocation, currentSet.romType);
+    int pcAddr = pcStart + tile.id * currentSet.bpp * 8;
+    int romAddr = ROMDataEngine::pcToSnes(pcAddr, currentSet.romType);
+    ui->tileInfos->setTile(ui->graphicsView->tileUnderCursor()->image, tile.id, pcAddr, romAddr, tile.id * currentSet.bpp * 8);
 }
 
 void    show_tile8(tile8 t)
@@ -158,6 +173,7 @@ void MainUI::setGrayscalePalette(unsigned int paletteSize)
 
 void MainUI::closeEvent(QCloseEvent *event)
 {
+    Q_UNUSED(event)
     m_settings->setValue("lastROMDirectory", lastROMDirectory);
     m_settings->setValue("lastPresetDirectory", lastPresetDirectory);
     m_settings->setValue("lastPNGDirectory", lastPNGDirectory);
@@ -453,7 +469,9 @@ void MainUI::on_pngImportpushButton_clicked()
             qDebug() << "Importing stuff";
             updatePresetWithUi();
             QList<tile8>    importedRawTiles = tilesFromPNG(pngFile);
+            qDebug("Imported %d tiles", importedRawTiles.size());
             importedRawTiles = TilesPattern::reverse(currentSet.tilesPattern, importedRawTiles);
+            qDebug("Transformed to %d tiles", importedRawTiles.size());
             dataEngine.injectTiles(importedRawTiles, currentSet);
             if ((currentSet.pcPaletteLocation != 0 || currentSet.SNESPaletteLocation != 0) && iDiag.useImagePalette)
             {
@@ -486,5 +504,6 @@ void MainUI::on_compressionComboBox_currentIndexChanged(const QString &arg1)
 void MainUI::on_tilePatternComboBox_currentIndexChanged(const QString &arg1)
 {
     currentSet.tilesPattern = TilesPattern::pattern(arg1);
-    tileScene->buildScene(rawTiles, mPalette, currentSet.tilesPattern);
+    if (!rawTiles.isEmpty())
+        tileScene->buildScene(rawTiles, mPalette, currentSet.tilesPattern);
 }

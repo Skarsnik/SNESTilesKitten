@@ -88,10 +88,11 @@ QVector<QVector<tile8> > TilesPattern::transform(const QList<tile8>& tiles) cons
     QVector<QVector<tile8> > toret;
     unsigned int transPerRow = tilesPerRow / tVectWidth;
     unsigned int nbTransform = tiles.size() / numberOfTiles;
+    qDebug("Tiles size : %d - nbtransform : %d - pattern number of tiles : %d", tiles.size(), nbTransform, numberOfTiles);
     if (transPerRow > nbTransform)
         toret.resize(tVectHeight);
     else
-        toret.resize((unsigned int((nbTransform / transPerRow) + 0.5)) * tVectHeight);
+        toret.resize(((unsigned int)(((double)nbTransform / (double)transPerRow) + 0.5)) * tVectHeight);
     QMutableVectorIterator<QVector<tile8> > it(toret);
     while (it.hasNext())
     {
@@ -108,6 +109,7 @@ QVector<QVector<tile8> > TilesPattern::transform(const QList<tile8>& tiles) cons
                 unsigned int posTile = transformVector[j][i] + numberOfTiles * repeat;
                 unsigned int posX = i + repeatOffsetX;
                 unsigned int posY = j + repeatOffsetY;
+                //qDebug("X: %d - Y: %d - posTile : %d", posX, posY, posTile);
                 toret[posY][posX] = tiles[posTile];
             }
         }
@@ -120,6 +122,7 @@ QVector<QVector<tile8> > TilesPattern::transform(const QList<tile8>& tiles) cons
             repeatOffsetX += tVectWidth;
         repeat++;
     }
+    qDebug() << "End of transform";
     return toret;
 }
 
@@ -144,10 +147,10 @@ QList<tile8> TilesPattern::reverse(const QList<tile8> &tiles) const
         unsigned int lineBlock = i / (nbTransPerRow * numberOfTiles);
         unsigned int blockNB = (i % (nbTransPerRow * numberOfTiles) % tilesPerRow) / tVectWidth;
 
-        qDebug() << colInTab << lineInTab << " = " << tileNb;
+        //qDebug() << colInTab << lineInTab << " = " << tileNb;
         //unsigned int pos = tileNb + ((i % tilesPerRow) / nbTransPerRow) * numberOfTiles;
         unsigned int pos = tileNb + (lineBlock + blockNB) * numberOfTiles;
-        qDebug() << i << "Goes to : " << pos;
+        //qDebug() << i << "Goes to : " << pos;
         toretVec[pos] = tiles[i];
     }
     return toretVec.toList();

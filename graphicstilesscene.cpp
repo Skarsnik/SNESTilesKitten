@@ -9,7 +9,7 @@ GraphicsTilesScene::GraphicsTilesScene(QObject* parent) : QGraphicsScene(parent)
 
 void GraphicsTilesScene::buildScene(const QList<tile8> &tiles, const QVector<QRgb> mPalette, const TilesPattern &tp)
 {
-    QVector<QVector<tile8> > arrangedTiles = TilesPattern::transform(tp, tiles);
+    arrangedTiles = TilesPattern::transform(tp, tiles);
     tilesPattern = tp;
     allTiles = tiles;
     clear();
@@ -35,7 +35,7 @@ void GraphicsTilesScene::buildScene(const QList<tile8> &tiles, const QVector<QRg
             imagesCache[tile.id] = m;
             GraphicsTileItem *newTileItem = new GraphicsTileItem(m, tile);
             addItem(newTileItem);
-            newTileItem->tileZoom = tilesZoom;
+            newTileItem->setTileZoom(tilesZoom);
             newTileItem->setPos(i * newTileItem->boundingRect().width() + i, j * newTileItem->boundingRect().width() + j);
         }
     }
@@ -47,7 +47,6 @@ void GraphicsTilesScene::buildScene(const QList<tile8> &tiles, const QVector<QRg
 void GraphicsTilesScene::updateScene()
 {
     qDebug() << "Update scene";
-    QVector<QVector<tile8> > arrangedTiles = TilesPattern::transform(tilesPattern, allTiles);
     unsigned int itemCpt = 0;
     for (unsigned int j = 0; j < arrangedTiles.size(); j++)
     {
@@ -58,7 +57,7 @@ void GraphicsTilesScene::updateScene()
             GraphicsTileItem *tileItem = (GraphicsTileItem*) items()[itemCpt];
             tileItem->image = m;
             tileItem->rawTile = tile;
-            tileItem->tileZoom = tilesZoom;
+            tileItem->setTileZoom(tilesZoom);
             tileItem->setPos(i * tileItem->boundingRect().width() + i, j * tileItem->boundingRect().width() + j);
             itemCpt++;
         }

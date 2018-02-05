@@ -14,10 +14,12 @@ public:
     QRectF boundingRect() const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
                      QWidget *widget);
+    void            setTileZoom(unsigned int z);
     unsigned int    tileZoom;
     tile8           rawTile;
     QPixmap         image;
     bool            t_enabled;
+    QPixmap         imageScaled;
 };
 
 #endif // GRAPHICSTILEITEM_H

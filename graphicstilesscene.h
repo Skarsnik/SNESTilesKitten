@@ -17,6 +17,7 @@ public:
 
 private:
     QList<tile8> allTiles;
+    QVector<QVector<tile8> > arrangedTiles;
     unsigned int tilesZoom;
     TilesPattern    tilesPattern;
     QMap<unsigned int, QPixmap>  imagesCache;

@@ -699,7 +699,7 @@ PC locations all assume the rom does not have the SMC header</string>
          </spacer>
         </item>
         <item row="0" column="0" colspan="3">
-         <widget class="QGraphicsView" name="graphicsView">
+         <widget class="MGraphicsView" name="graphicsView">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
             <horstretch>0</horstretch>
@@ -808,6 +808,9 @@ PC locations all assume the rom does not have the SMC header</string>
             </property>
            </spacer>
           </item>
+          <item>
+           <widget class="TileInfow" name="tileInfos" native="true"/>
+          </item>
          </layout>
         </item>
        </layout>
@@ -829,13 +832,26 @@ PC locations all assume the rom does not have the SMC header</string>
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>MGraphicsView</class>
+   <extends>QGraphicsView</extends>
+   <header>mgraphicsview.h</header>
+  </customwidget>
+  <customwidget>
+   <class>TileInfow</class>
+   <extends>QWidget</extends>
+   <header>tileinfow.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="tilesLocationButtonGroup"/>
-  <buttongroup name="paletteGroupButton"/>
-  <buttongroup name="buttonGroup_2"/>
   <buttongroup name="buttonGroup"/>
   <buttongroup name="headerButtonGroup"/>
+  <buttongroup name="tilesLocationButtonGroup"/>
+  <buttongroup name="buttonGroup_2"/>
+  <buttongroup name="paletteGroupButton"/>
  </buttongroups>
 </ui>

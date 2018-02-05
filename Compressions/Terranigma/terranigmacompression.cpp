@@ -1,5 +1,5 @@
 #include "terranigmacompression.h"
-#include "Terranigma/Comp.h"
+#include "Comp.h"
 
 TerranigmaCompression::TerranigmaCompression()
 {

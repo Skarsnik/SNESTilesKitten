@@ -10,12 +10,16 @@ GraphicsTileItem::GraphicsTileItem(const QPixmap& img, const tile8& tile)
 
 QRectF GraphicsTileItem::boundingRect() const
 {
-    QPixmap pix = image.scaled(tileZoom, tileZoom);
-    return pix.rect();
+    return imageScaled.rect();
 }
 
 void GraphicsTileItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-    QPixmap pix = image.scaled(tileZoom, tileZoom);
-    painter->drawPixmap(0, 0, pix);
+    painter->drawPixmap(0, 0, imageScaled);
+}
+
+void GraphicsTileItem::setTileZoom(unsigned int z)
+{
+    tileZoom = z;
+    imageScaled = image.scaled(tileZoom, tileZoom);
 }

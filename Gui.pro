@@ -28,7 +28,9 @@ SOURCES += main.cpp\
     graphicstileitem.cpp \
     injectdialog.cpp \
     graphicstilesscene.cpp \
-    tilespattern.cpp
+    tilespattern.cpp \
+    tileinfow.cpp \
+    mgraphicsview.cpp
 
 HEADERS  += mainui.h \
     tilepreset.h \
@@ -45,8 +47,11 @@ HEADERS  += mainui.h \
     graphicstileitem.h \
     injectdialog.h \
     graphicstilesscene.h \
-    tilespattern.h
+    tilespattern.h \
+    tileinfow.h \
+    mgraphicsview.h
 
 FORMS    += mainui.ui \
     presetsavedialog.ui \
-    injectdialog.ui
+    injectdialog.ui \
+    tileinfow.ui

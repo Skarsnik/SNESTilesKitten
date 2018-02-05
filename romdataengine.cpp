@@ -129,6 +129,7 @@ QVector<QRgb> ROMDataEngine::extractPalette(TilePreset &preset)
 unsigned int ROMDataEngine::injectTiles(const QList<tile8> &rawTiles, const TilePreset& preset)
 {
     QFile file(romFile);
+    qDebug() << "File size is : " << file.size();
     unsigned int filePos = getRomPosition(preset, preset.pcTilesLocation, preset.SNESTilesLocation);
     if (!file.open(QIODevice::WriteOnly | QIODevice::ReadOnly))
     {
@@ -242,6 +243,22 @@ QMap<QString, CompressionInterface *> ROMDataEngine::availableCompressions()
 QMap<QString, CompressionInfo> ROMDataEngine::compressionInfos()
 {
     return m_compressionsInfo;
+}
+
+unsigned int ROMDataEngine::pcToSnes(unsigned int pcAddr, QString romType)
+{
+    enum rom_type rType = HiROM;
+    if (romType == "LoROM")
+        rType = LoROM;
+    return rommapping_pc_to_snes(pcAddr, rType, false);
+}
+
+unsigned int ROMDataEngine::snesToPC(unsigned int romAddr, QString romType)
+{
+    enum rom_type rType = HiROM;
+    if (romType == "LoROM")
+        rType = LoROM;
+    return rommapping_snes_to_pc(romAddr, rType, false);
 }
 
 unsigned int ROMDataEngine::getRomPosition(const TilePreset &preset, unsigned int directAddr, unsigned int snesAddr)

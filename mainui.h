@@ -23,6 +23,8 @@ public:
     ~MainUI();
 
 private slots:
+    void    onTileUnderCursorChanged();
+
     void on_romOpenButton_clicked();
 
     void on_headerButtonGroup_clicked(int);

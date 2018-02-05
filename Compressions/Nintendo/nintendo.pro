@@ -6,19 +6,19 @@
 
 QT       += core gui
 
-TARGET = alttpcompression
+TARGET = nintendocompression
 TEMPLATE = lib
 CONFIG += plugin
 
 QMAKE_CFLAGS += "-std=c99"
 
-DESTDIR = ../plugins
+DESTDIR = ../../plugins
 
 SOURCES += nintendo.cpp \
-    ../lowlevelstuff/src/compressions/stdnintendo.c
+    ../../lowlevelstuff/src/compressions/stdnintendo.c
 
 HEADERS += nintendo.h \
-    ../lowlevelstuff/src/compressions/stdnintendo.h
+    ../../lowlevelstuff/src/compressions/stdnintendo.h
 
 DISTFILES += nintendo.json
 
