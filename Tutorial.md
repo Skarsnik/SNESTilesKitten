@@ -95,13 +95,6 @@ We don't choose a compression, since default is **None** then we set the **bpp**
 
 You can already hit the **refresh** button since SNESTilesKitten use a default gray palette
 
-![](https://skarsnik.github.io/SNESTilesKitten/webimage/defaultbadlinksprite.png)
-
-As you can see it look like Link face and a part of its body. It look odd because each tiles are stored linearly in the ROM but each part of Link body and head is 4 tiles. 
-
-It's the game code that put the right tiles together to form the final sprite and STK default consider tiles comes by 8 tiles chuncks.
-
-We could work on the tiles like that but it will be pretty annoying to rearrange them. Let's change **The tiles show per row** value to **16**
 
 ![](https://skarsnik.github.io/SNESTilesKitten/webimage/linkspritenocolor.png)
 
