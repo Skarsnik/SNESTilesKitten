@@ -261,6 +261,7 @@ void MainUI::openRom(QString rom)
         ui->loRomRadioButton->toggle();
     else
         ui->hiRomRadioButton->toggle();
+    currentSet.romType = romInfo.romType;
     ui->romFileLineEdit->setText(rom);
     ui->statusBar->showMessage(QFileInfo(rom).baseName() + " loaded - " + romInfo.romType + " - Rom title is : " + romInfo.romTitle);
     romFile = rom;
