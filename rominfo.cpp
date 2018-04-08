@@ -5,12 +5,18 @@
 
 ROMInfo::ROMInfo(QString romFile)
 {
+    romType = "LoROM";
+    romTitle = "Not A ROM";
+    hasHeader = false;
     if (romFile.isEmpty())
             return;
     QFileInfo fi(romFile);
     size = fi.size();
+    if (fi.size() < 0x7C0)
+        return ;
     QFile f(romFile);
     f.open(QIODevice::ReadOnly);
+    if (f.size())
     if (f.size() & 0x200)
     {
         qDebug() << "ROM has header";
