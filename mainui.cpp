@@ -304,6 +304,11 @@ void MainUI::updateUiWithPreset()
     ui->compressionComboBox->setCurrentText(currentSet.compression);
     switch (currentSet.bpp)
     {
+        case 1:
+        {
+            ui->bpp1RadioButton->setChecked(true);
+            break;
+        }
         case 2:
         {
             ui->bpp2RadioButton->setChecked(true);
@@ -351,6 +356,8 @@ void MainUI::updatePresetWithUi()
     else
         currentSet.pcTilesLocation = ui->pcAddrLineEdit->text().toUInt(&ok, 16);
     currentSet.length = ui->sizeLineEdit->text().toUInt();
+    if (ui->bpp1RadioButton->isChecked())
+        currentSet.bpp = 1;
     if (ui->bpp2RadioButton->isChecked())
         currentSet.bpp = 2;
     if (ui->bpp3RadioButton->isChecked())

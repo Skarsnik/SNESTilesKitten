@@ -9,6 +9,8 @@ INCLUDEPATH += ../
 
 TEMPLATE = app
 
+RC_FILE = ../snestileskitten.rc
+
 SOURCES += ../romdataengine.cpp \
     ../tilepreset.cpp \
     ../lowlevelstuff/src/tile.c \

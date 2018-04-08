@@ -12,6 +12,8 @@ TARGET = SNESTilesKitten
 TEMPLATE = app
 QMAKE_CFLAGS += "-std=c99"
 
+RC_FILE = snestileskitten.rc
+
 SOURCES += main.cpp\
         mainui.cpp \
     tilepreset.cpp \
@@ -55,3 +57,6 @@ FORMS    += mainui.ui \
     presetsavedialog.ui \
     injectdialog.ui \
     tileinfow.ui
+
+DISTFILES += \
+    snestileskitten.rc

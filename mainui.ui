@@ -350,6 +350,16 @@ PC locations all assume the rom does not have the SMC header</string>
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_7">
              <item>
+              <widget class="QRadioButton" name="bpp1RadioButton">
+               <property name="text">
+                <string>1 bpp</string>
+               </property>
+               <attribute name="buttonGroup">
+                <string notr="true">paletteGroupButton</string>
+               </attribute>
+              </widget>
+             </item>
+             <item>
               <widget class="QRadioButton" name="bpp2RadioButton">
                <property name="text">
                 <string>2 bpp</string>
@@ -848,10 +858,10 @@ PC locations all assume the rom does not have the SMC header</string>
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroup"/>
-  <buttongroup name="headerButtonGroup"/>
-  <buttongroup name="tilesLocationButtonGroup"/>
-  <buttongroup name="buttonGroup_2"/>
   <buttongroup name="paletteGroupButton"/>
+  <buttongroup name="buttonGroup_2"/>
+  <buttongroup name="tilesLocationButtonGroup"/>
+  <buttongroup name="headerButtonGroup"/>
+  <buttongroup name="buttonGroup"/>
  </buttongroups>
 </ui>
