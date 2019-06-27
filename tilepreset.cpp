@@ -9,7 +9,7 @@ TilePreset::TilePreset()
     romName = "";
     romType = "";
 
-    pcTilesLocation = 0;
+    pcTilesLocation = -1;
     SNESTilesLocation = 0;
     length = 0;
     bpp = 0;

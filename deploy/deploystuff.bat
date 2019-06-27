@@ -1,10 +1,9 @@
 ::change according to your installation
 
-set projectPath=D:\Project\SNESTilesKitten\
-set compilePath=D:\Project\compile\STK\
-set deployPath=D:\Project\SNESTilesKitten\deploy\SNESTilesKitten\
+set projectPath=F:\Project\SNESTilesKitten\
+set compilePath=F:\Project\compile\STK\
+set deployPath=F:\Project\SNESTilesKitten\deploy\SNESTilesKitten\
 set originalBinDir=%compilePath%
-set vscdll=D:\Visual Studio\VC\Redist\MSVC\14.12.25810\x64\Microsoft.VC141.CRT\msvcp140.dll
 
 rmdir /Q /S %deployPath%
 mkdir %deployPath%
@@ -15,7 +14,6 @@ mkdir %deployPath%
 
 mkdir %compilePath%
 cd %compilePath%
-set QMAKE_MSC_VER=1910
 qmake %projectPath%\SNESTilesKitten.pro -spec win32-msvc "CONFIG+=release"
 nmake
 
@@ -40,5 +38,3 @@ rmdir /Q /S %deployPath%\imageformats
 del %deployPath%\opengl32sw.dll
 del %deployPath%\libEGL.dll
 del %deployPath%\libGLESV2.dll
-
-xcopy /y "%vscdll%" %deployPath%

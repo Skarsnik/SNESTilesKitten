@@ -18,7 +18,7 @@ public:
     TilesPattern    tilesPattern;
 
     unsigned int    SNESTilesLocation;
-    unsigned int    pcTilesLocation;
+             int    pcTilesLocation;
     unsigned int    SNESPaletteLocation;
     unsigned int    pcPaletteLocation;
     bool            paletteNoZeroColor;

@@ -38,7 +38,7 @@ public:
     static unsigned int                             snesToPC(unsigned int romAddr, QString romType);
 
 private:
-    unsigned int getRomPosition(const TilePreset &preset, unsigned int directAddr, unsigned int snesAddr);
+    unsigned int getRomPosition(const TilePreset &preset, int directAddr, unsigned int snesAddr);
     QString romFile;
 
     static bool                                 loadedCompressionPlugins;

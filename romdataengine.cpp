@@ -230,8 +230,10 @@ QString ROMDataEngine::getRomFile() const
 
 void ROMDataEngine::setRomFile(const QString &value)
 {
+    qDebug() << "Loading rom " << value;
     romFile = value;
     ROMInfo romI(romFile);
+    qDebug() << romI.size;
     romInfo = romI;
 }
 
@@ -261,7 +263,7 @@ unsigned int ROMDataEngine::snesToPC(unsigned int romAddr, QString romType)
     return rommapping_snes_to_pc(romAddr, rType, false);
 }
 
-unsigned int ROMDataEngine::getRomPosition(const TilePreset &preset, unsigned int directAddr, unsigned int snesAddr)
+unsigned int ROMDataEngine::getRomPosition(const TilePreset &preset, int directAddr, unsigned int snesAddr)
 {
     bool    romHasHeader = romInfo.hasHeader;
     if (overrideHeaderInfo)
@@ -270,7 +272,7 @@ unsigned int ROMDataEngine::getRomPosition(const TilePreset &preset, unsigned in
     enum rom_type rType = HiROM;
     if (preset.romType == "LoROM")
         rType = LoROM;
-    if (directAddr == 0) {
+    if (directAddr == -1) {
         filePos = rommapping_snes_to_pc(snesAddr, rType, romHasHeader);
     } else {
         filePos = directAddr;

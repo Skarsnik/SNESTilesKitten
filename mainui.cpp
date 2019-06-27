@@ -184,7 +184,7 @@ void MainUI::closeEvent(QCloseEvent *event)
 void MainUI::on_romOpenButton_clicked()
 {
     QString fileName = QFileDialog::getOpenFileName(this,
-          tr("Select ROM"), lastROMDirectory, tr("SNES ROM (*.smc *.sfc);;All files (*)"));
+          tr("Select ROM"), lastROMDirectory, tr("SNES ROM or associated (*.smc *.sfc *.gfx *.bin);;All files (*)"));
     if (!fileName.isNull())
         openRom(fileName);
 }

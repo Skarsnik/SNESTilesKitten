@@ -17,14 +17,15 @@ ROMInfo::ROMInfo(QString romFile)
     QFile f(romFile);
     f.open(QIODevice::ReadOnly);
     if (f.size())
-    if (f.size() & 0x200)
     {
-        qDebug() << "ROM has header";
-        hasHeader = true;
-    }
-    else {
-        hasHeader = false;
-        qDebug() << "ROM has no header";
+        if (f.size() & 0x200)
+        {
+            qDebug() << "ROM has header";
+            hasHeader = true;
+        } else {
+            hasHeader = false;
+            qDebug() << "ROM has no header";
+        }
     }
     /* 0xFC0 - 21 game title
        0xFD5 -  rom makeup?
@@ -52,4 +53,5 @@ ROMInfo::ROMInfo(QString romFile)
         romType = "LoROM";
     }
     romTitle = mromTitle;
+    qDebug() << romFile << "is " << romType << hasHeader << size;
 }
