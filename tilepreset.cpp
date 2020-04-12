@@ -74,3 +74,16 @@ bool TilePreset::load(const QString& file)
 
     return true;
 }
+
+QDebug operator<<(QDebug debug, const TilePreset &pre)
+{
+    debug << "-------------";
+    debug << pre.name;
+    debug << "SNES: " << pre.SNESTilesLocation;
+    debug << "PC: " << pre.pcTilesLocation;
+    debug << "BPP: " << pre.bpp << " - " << pre.length;
+    debug << "Pal SNES: " << pre.SNESPaletteLocation;
+    debug << "Pal PC: " << pre.pcPaletteLocation;
+    debug << "-------------";
+    return debug;
+}

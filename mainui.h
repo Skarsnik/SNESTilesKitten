@@ -5,6 +5,7 @@
 #include "lowlevelstuff/src/tile.h"
 #include "compressioninterface.h"
 #include "graphicstilesscene.h"
+#include "paletteeditor.h"
 #include "romdataengine.h"
 #include "tilepreset.h"
 #include <QGraphicsScene>
@@ -57,6 +58,13 @@ private slots:
 
     void on_tilePatternComboBox_currentIndexChanged(const QString &arg1);
 
+    void on_bankComboBox_currentIndexChanged(int index);
+
+    void on_netaButton_clicked();
+
+
+    void on_editPaletteButton_clicked();
+
 private:
     Ui::MainUI      *ui;
     TilePreset      currentSet;
@@ -64,6 +72,7 @@ private:
     QString         lastPresetDirectory;
     QString         lastROMDirectory;
     QString         lastPNGDirectory;
+    PaletteEditor*  paletteEditor;
 
     QString         romFile;
     unsigned int    tilesPerRow;

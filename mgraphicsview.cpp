@@ -4,7 +4,7 @@
 
 MGraphicsView::MGraphicsView(QWidget *parent) : QGraphicsView(parent)
 {
-    m_tileUnderCursor = NULL;
+    m_tileUnderCursor = nullptr;
     setMouseTracking(true);
 }
 
@@ -15,10 +15,10 @@ GraphicsTileItem *MGraphicsView::tileUnderCursor()
 
 void MGraphicsView::mouseMoveEvent(QMouseEvent *event)
 {
-    if (scene() == NULL)
+    if (scene() == nullptr)
         return;
     QGraphicsItem* item = scene()->itemAt(mapToScene(event->pos()), transform());
-    if (item != NULL)
+    if (item != nullptr)
     {
         GraphicsTileItem* gItem = (GraphicsTileItem*) item;
         if (gItem != m_tileUnderCursor)

@@ -22,8 +22,8 @@ SOURCES += main.cpp\
     lowlevelstuff/src/mapping_lorom.c \
     lowlevelstuff/src/rommapping.c \
     lowlevelstuff/src/palette.c \
+    lowlevelstuff/src/rominfo.c \
     graphicspalettecoloritem.cpp \
-    rominfo.cpp \
     presetsavedialog.cpp \
     pngexportimport.cpp \
     romdataengine.cpp \
@@ -32,31 +32,39 @@ SOURCES += main.cpp\
     graphicstilesscene.cpp \
     tilespattern.cpp \
     tileinfow.cpp \
-    mgraphicsview.cpp
+    mgraphicsview.cpp \
+    myrominfo.cpp \
+    paletteeditor.cpp \
+    graphicspaletteview.cpp \
+    snespalette.cpp
 
 HEADERS  += mainui.h \
     tilepreset.h \
     lowlevelstuff/src/tile.h \
     lowlevelstuff/src/rommapping.h \
+    lowlevelstuff/src/rominfo.h \
     compressioninterface.h \
     compressioninfo.h \
     lowlevelstuff/src/palette.h \
     graphicspalettecoloritem.h \
-    rominfo.h \
     presetsavedialog.h \
     pngexportimport.h \
     romdataengine.h \
     graphicstileitem.h \
     injectdialog.h \
-    graphicstilesscene.h \
     tilespattern.h \
     tileinfow.h \
-    mgraphicsview.h
+    mgraphicsview.h \
+    myrominfo.h \
+    paletteeditor.h \
+    graphicspaletteview.h \
+    snespalette.h
 
 FORMS    += mainui.ui \
     presetsavedialog.ui \
     injectdialog.ui \
-    tileinfow.ui
+    tileinfow.ui \
+    paletteeditor.ui
 
 DISTFILES += \
     snestileskitten.rc

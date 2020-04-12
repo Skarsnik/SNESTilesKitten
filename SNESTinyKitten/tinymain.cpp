@@ -2,7 +2,7 @@
 #include <QCommandLineParser>
 #include <stdio.h>
 #include "pngexportimport.h"
-#include "rominfo.h"
+#include "myrominfo.h"
 #include "romdataengine.h"
 
 bool    workingModeExport = true;

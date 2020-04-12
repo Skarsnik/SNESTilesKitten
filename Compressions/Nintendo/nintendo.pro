@@ -20,6 +20,8 @@ SOURCES += nintendo.cpp \
 HEADERS += nintendo.h \
     ../../lowlevelstuff/src/compressions/stdnintendo.h
 
+INCLUDEPATH += ../../lowlevelstuff/src/compressions/
+
 DISTFILES += nintendo.json
 
 

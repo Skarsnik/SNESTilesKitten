@@ -3,7 +3,7 @@
 
 #include "tilepreset.h"
 #include "lowlevelstuff/src/tile.h"
-#include "rominfo.h"
+#include "myrominfo.h"
 #include "compressioninterface.h"
 
 #include <QDir>

@@ -2,6 +2,7 @@
 #define TILEPRESET_H
 
 #include <QString>
+#include <QDebug>
 #include "tilespattern.h"
 
 class TilePreset
@@ -27,5 +28,7 @@ public:
     unsigned int bpp;
     QString compression;
 };
+
+QDebug operator<<(QDebug debug, const TilePreset &pre);
 
 #endif // TILEPRESET_H

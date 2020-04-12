@@ -1,4 +1,5 @@
 #include "mainui.h"
+#include "paletteeditor.h"
 #include <QApplication>
 #include <QDebug>
 
@@ -33,6 +34,22 @@ int main(int argc, char *argv[])
     patternDir.cd("TilesPatterns");
     ROMDataEngine::loadCompressionPlugins(pluginsDir);
     TilesPattern::loadPatterns(patternDir);
+
+
+    /*SNESPalette mPalette(16);
+    unsigned int psize = 16;
+    for (unsigned int i = 0; i < psize; i++)
+    {
+        QRgb color = qRgb(i * (255 / psize), i * (255 / psize), i * (255 / psize));
+        SNESColor col;
+        col.setRgb(color);
+        mPalette.colors[i] = col;
+    }
+    PaletteEditor* p = new PaletteEditor();
+    p->setPalette(mPalette);
+    p->show();
+    return a.exec();*/
+
     /*QList<tile8> someTiles;
     for (unsigned int i = 0; i < 64; i++)
     {

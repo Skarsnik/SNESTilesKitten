@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>910</width>
-    <height>550</height>
+    <height>563</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -181,6 +181,20 @@ PC locations all assume the rom does not have the SMC header</string>
            <string>Tiles location / Property</string>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_2">
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_13">
+             <item>
+              <widget class="QLabel" name="label_12">
+               <property name="text">
+                <string>Bank (autofill value)</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QComboBox" name="bankComboBox"/>
+             </item>
+            </layout>
+           </item>
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_4">
              <item>
@@ -534,6 +548,13 @@ PC locations all assume the rom does not have the SMC header</string>
                 </widget>
                </item>
                <item>
+                <widget class="QPushButton" name="netaButton">
+                 <property name="text">
+                  <string>inc</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
                 <spacer name="horizontalSpacer_8">
                  <property name="orientation">
                   <enum>Qt::Horizontal</enum>
@@ -695,7 +716,17 @@ PC locations all assume the rom does not have the SMC header</string>
           </property>
          </widget>
         </item>
-        <item row="1" column="2">
+        <item row="0" column="0" colspan="3">
+         <widget class="MGraphicsView" name="graphicsView">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="2">
          <spacer name="horizontalSpacer_14">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
@@ -708,13 +739,13 @@ PC locations all assume the rom does not have the SMC header</string>
           </property>
          </spacer>
         </item>
-        <item row="0" column="0" colspan="3">
-         <widget class="MGraphicsView" name="graphicsView">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
+        <item row="1" column="2">
+         <widget class="QPushButton" name="editPaletteButton">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Edit Palette</string>
           </property>
          </widget>
         </item>
@@ -858,10 +889,10 @@ PC locations all assume the rom does not have the SMC header</string>
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="paletteGroupButton"/>
-  <buttongroup name="buttonGroup_2"/>
   <buttongroup name="tilesLocationButtonGroup"/>
-  <buttongroup name="headerButtonGroup"/>
+  <buttongroup name="buttonGroup_2"/>
   <buttongroup name="buttonGroup"/>
+  <buttongroup name="headerButtonGroup"/>
+  <buttongroup name="paletteGroupButton"/>
  </buttongroups>
 </ui>

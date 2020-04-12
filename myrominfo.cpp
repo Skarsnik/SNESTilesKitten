@@ -1,4 +1,5 @@
-#include "rominfo.h"
+#include "myrominfo.h"
+#include "lowlevelstuff/src/rominfo.h"
 #include <QDebug>
 #include <QFile>
 #include <QFileInfo>
@@ -33,25 +34,22 @@ ROMInfo::ROMInfo(QString romFile)
     */
     unsigned int header_offset = hasHeader ? 0x200 : 0;
     f.seek(0x7FC0 + header_offset);
-    QByteArray mromTitle = f.read(21);
-    f.seek(0x7FD5 + header_offset);
-    QByteArray romMakeUp = f.read(1);
-    if (romMakeUp[0] & 0x1) // bit for HiROM set
+    QByteArray headerData = f.read(32);
+    rom_infos* crom_info = get_rom_info(headerData.data());
+    qDebug() << QString::number(crom_info->checksum, 16) << QString::number(crom_info->checksum_comp, 16);
+    qDebug() << crom_info->title;
+    if (!crom_info->make_sense)
     {
-        //This is unconsistent, let's try HiROM
         f.seek(0xFFC0 + header_offset);
-        mromTitle = f.read(21);
-        f.seek(0xFFD5 + header_offset);
-        romMakeUp = f.read(1);
-        if (romMakeUp[0] & 0x1)
-        {
-            qDebug() << "ROM is HiROM";
-            romType = "HiROM";
-        }
-    } else {
-        qDebug() << "ROM is LoROM";
-        romType = "LoROM";
+        QByteArray headerData = f.read(32);
+        free(crom_info);
+        crom_info = get_rom_info(headerData.data());
+        qDebug() << QString::number(crom_info->checksum, 16) << QString::number(crom_info->checksum_comp, 16);
+        qDebug() << crom_info->title;
     }
-    romTitle = mromTitle;
+    if (crom_info->type == HiROM)
+        romType = "HiROM";
+    romTitle = crom_info->title;
+    free(crom_info);
     qDebug() << romFile << "is " << romType << hasHeader << size;
 }

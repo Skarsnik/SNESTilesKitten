@@ -1,5 +1,5 @@
 #include "nintendo.h"
-#include "../../lowlevelstuff/src/compressions/stdnintendo.h"
+#include "stdnintendo.h"
 #include <QDebug>
 
 

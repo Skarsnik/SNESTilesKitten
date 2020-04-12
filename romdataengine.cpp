@@ -105,11 +105,13 @@ QVector<QRgb> ROMDataEngine::extractPalette(TilePreset &preset)
     QVector<QRgb> mPalette;
     QFile plop(romFile);
     unsigned int filePos = getRomPosition(preset, preset.pcPaletteLocation, preset.SNESPaletteLocation);
+    qDebug() << "Palette pos : " << QString::number(filePos, 16);
     plop.open(QIODevice::ReadOnly);
     plop.seek(filePos);
     unsigned int palette_size = qPow(2, preset.bpp);// - 1;
     QByteArray ab = plop.read(palette_size * 2);
-    char* data = ab.data();
+    qDebug() << ab;
+    const char* data = ab.constData();
     if (preset.paletteNoZeroColor)
     {
         mPalette.append(qRgb(0x99, 0x99, 0x99));
@@ -123,6 +125,7 @@ QVector<QRgb> ROMDataEngine::extractPalette(TilePreset &preset)
         mPalette.append(qRgb(col.red, col.green, col.blue));
     }
     palette_free(raw_pal);
+    qDebug() << mPalette;
     return mPalette;
 }
 
@@ -272,6 +275,7 @@ unsigned int ROMDataEngine::getRomPosition(const TilePreset &preset, int directA
     enum rom_type rType = HiROM;
     if (preset.romType == "LoROM")
         rType = LoROM;
+    qDebug() << directAddr;
     if (directAddr == -1) {
         filePos = rommapping_snes_to_pc(snesAddr, rType, romHasHeader);
     } else {

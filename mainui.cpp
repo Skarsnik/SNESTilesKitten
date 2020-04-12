@@ -12,6 +12,8 @@
 #include <QGraphicsPixmapItem>
 #include <QPluginLoader>
 #include <QInputDialog>
+#include <QShortcut>
+#include <QMessageBox>
 #include "lowlevelstuff/src/rommapping.h"
 #include "lowlevelstuff/src/palette.h"
 #include "pngexportimport.h"
@@ -38,10 +40,16 @@ MainUI::MainUI(QWidget *parent) :
 
     tileScene = new GraphicsTilesScene();
     palScene = new QGraphicsScene();
+    paletteEditor = new PaletteEditor();
     ui->graphicsView->setScene(tileScene);
     ui->paletteGraphicsView->setScene(palScene);
     setGrayscalePalette();
     buildPaletteScene();
+    QShortcut* refreshShortcut = new QShortcut(QKeySequence("F5"), this);
+    connect(refreshShortcut, &QShortcut::activated, [=]{ this->on_refreshPushButton_clicked(); });
+    QShortcut* incShortcut = new QShortcut(QKeySequence("F1"), this);
+    connect(incShortcut, &QShortcut::activated, [=]{ this->on_netaButton_clicked(); });
+
 
     connect(ui->headerButtonGroup, SIGNAL(buttonClicked(int)), this, SLOT(on_headerButtonGroup_clicked(int)));
     connect(ui->graphicsView, SIGNAL(tileUnderCursorChanged()), this, SLOT(onTileUnderCursorChanged()));
@@ -64,10 +72,10 @@ MainUI::MainUI(QWidget *parent) :
         cpt++;
     }
     ui->tilePatternComboBox->setCurrentText("normal");
-    /*if (1) {
-        openRom("D:\\Emulation\\Zelda - A Link to the Past\\Zelda - A Link to the Past.smc");
-        loadPreset("D:\\Project\\SNESTilesKitten\\Presets\\The Legend of Zelda - Link Sprites.stk");
-    }*/
+    if (1) {
+        openRom("F:\\Emulation\\Soul Blazer (U) [!]\\Soul Blazer (US).smc");
+        loadPreset("F:\\Project\\SNESTilesKitten\\Presets\\Soul Blazer - Hero sprite.stk");
+    }
     m_settings = new QSettings("skarsnik.nyo.fr", "SNESTilesKitten");
     if (m_settings->contains("windowGeometry"))
     {
@@ -223,6 +231,8 @@ void MainUI::on_palettePCLocationRadioButton_toggled(bool checked)
 void MainUI::on_refreshPushButton_clicked()
 {
     updatePresetWithUi();
+    qDebug() << "Updated preset";
+    qDebug() << currentSet;
     rebuildGTileView();
 }
 
@@ -268,6 +278,11 @@ void MainUI::openRom(QString rom)
     QIntValidator* intVal = (QIntValidator*) ui->sizeLineEdit->validator();
     intVal->setTop(romInfo.size);
     lastROMDirectory = QFileInfo(rom).dir().absolutePath();
+    unsigned int numberOfBanks = romInfo.size / 0x10000;
+    for (unsigned int i = 0; i < numberOfBanks; i++)
+    {
+        ui->bankComboBox->addItem(QString("Bank $%1").arg(i, 2, 16, QChar('0')));
+    }
 
 }
 
@@ -349,7 +364,7 @@ void MainUI::updateUiWithPreset()
 void MainUI::updatePresetWithUi()
 {
     currentSet.SNESTilesLocation = 0;
-    currentSet.pcTilesLocation = 0;
+    currentSet.pcTilesLocation = -1;
     bool ok;
     if (ui->tilesSNESRadioButton->isChecked())
         currentSet.SNESTilesLocation = ui->snesAddrLineEdit->text().toUInt(&ok, 16);
@@ -464,12 +479,12 @@ void MainUI::on_pngImportpushButton_clicked()
                     {
                         qCritical() << "Can't remove rom copy " << copy;
                         return ;
-                    }
-                    if (QFile::copy(romFile, copy) == false)
-                    {
-                        qCritical() << "Can't create a copy of the rom file\n";
-                        return ;
-                    }
+                    }                  
+                }
+                if (QFile::copy(romFile, copy) == false)
+                {
+                    qCritical() << "Can't create a copy of the rom file\n";
+                    return ;
                 }
                 qDebug() << "Set rom copy";
                 dataEngine.setRomFile(copy);
@@ -480,7 +495,12 @@ void MainUI::on_pngImportpushButton_clicked()
             qDebug("Imported %d tiles", importedRawTiles.size());
             importedRawTiles = TilesPattern::reverse(currentSet.tilesPattern, importedRawTiles);
             qDebug("Transformed to %d tiles", importedRawTiles.size());
-            dataEngine.injectTiles(importedRawTiles, currentSet);
+            auto writtenBytes = dataEngine.injectTiles(importedRawTiles, currentSet);
+            if (writtenBytes > currentSet.length)
+            {
+                QMessageBox::information(this, tr("Exessive write of data"),
+                tr("The reinjected data exceed the lenght defined in the preset, It mean the new data inject take more space than the original data.\nThat can corrupt the data that come after, making your rom implayable"));
+            }
             if ((currentSet.pcPaletteLocation != 0 || currentSet.SNESPaletteLocation != 0) && iDiag.useImagePalette)
             {
                 QVector<QRgb> ImportedPalette = paletteFromPNG(pngFile);
@@ -514,4 +534,32 @@ void MainUI::on_tilePatternComboBox_currentIndexChanged(const QString &arg1)
     currentSet.tilesPattern = TilesPattern::pattern(arg1);
     if (!rawTiles.isEmpty())
         tileScene->buildScene(rawTiles, mPalette, currentSet.tilesPattern);
+}
+
+void MainUI::on_bankComboBox_currentIndexChanged(int index)
+{
+    ui->pcAddrLineEdit->setText(QString::number(index * 0x10000, 16));
+    ui->sizeLineEdit->setText(QString::number(0x10000));
+}
+
+void MainUI::on_netaButton_clicked()
+{
+    bool ok;
+    auto value = ui->palettePCLocationLineEdit->text().toUInt(&ok, 16);
+    ui->palettePCLocationLineEdit->setText(QString::number(++value, 16));
+}
+
+void MainUI::on_editPaletteButton_clicked()
+{
+    paletteEditor->show();
+    SNESPalette pal(mPalette.size());
+    int cpt = 0;
+    foreach(QRgb rgb, mPalette)
+    {
+        SNESColor col;
+        col.setRgb(rgb);
+        pal.colors[cpt++] = col;
+    }
+    paletteEditor->setPalette(pal);
+    paletteEditor->setRomFile(romFile);
 }

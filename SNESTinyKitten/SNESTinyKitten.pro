@@ -17,8 +17,9 @@ SOURCES += ../romdataengine.cpp \
     ../lowlevelstuff/src/mapping_hirom.c \
     ../lowlevelstuff/src/mapping_lorom.c \
     ../lowlevelstuff/src/rommapping.c \
+    ../lowlevelstuff/src/rominfo.c \
     ../lowlevelstuff/src/palette.c \
-    ../rominfo.cpp \
+    ../myrominfo.cpp \
     ../pngexportimport.cpp \
     ../tilespattern.cpp \
     tinymain.cpp

@@ -5,6 +5,7 @@ set compilePath=F:\Project\compile\STK\
 set deployPath=F:\Project\SNESTilesKitten\deploy\SNESTilesKitten\
 set originalBinDir=%compilePath%
 
+rmdir /Q /S %compilePath%
 rmdir /Q /S %deployPath%
 mkdir %deployPath%
 :: Compile
@@ -21,15 +22,15 @@ nmake
 :: Copy file
 mkdir %deployPath%\plugins\
 xcopy /y %originalBinDir%\plugins\nintendocompression.dll %deployPath%\plugins\
-xcopy /y %originalBinDir%\plugins\terranigmacompression.dll %deployPath%\plugins\
+xcopy /y %originalBinDir%\plugins\quintetcompression.dll %deployPath%\plugins\
 
 xcopy /y %originalBinDir%\release\SNESTilesKitten.exe %deployPath%
 xcopy /y %originalBinDir%\SNESTinyKitten\release\SNESTinyKitten.exe %deployPath%
 
 mkdir %deployPath%\Presets
 mkdir %deployPath%\TilesPatterns
-xcopy /s %projectPath% %deployPath%\Presets
-xcopy /s %projectPath% %deployPath%\TilesPatterns
+xcopy /s %projectPath% %deployPath%\Presets\
+xcopy /s %projectPath% %deployPath%\TilesPatterns\
 
 windeployqt.exe --no-translations --no-system-d3d-compiler --no-opengl --no-svg --no-webkit --no-webkit2 --release %deployPath%\SNESTilesKitten.exe
 

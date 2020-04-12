@@ -2,6 +2,9 @@
 <ui version="4.0">
  <class>TileInfow</class>
  <widget class="QWidget" name="TileInfow">
+  <property name="windowModality">
+   <enum>Qt::WindowModal</enum>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,7 +14,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>SNESTilesKitten - Palette Editor</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
