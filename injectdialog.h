@@ -1,6 +1,8 @@
 #ifndef INJECTDIALOG_H
 #define INJECTDIALOG_H
 
+#include "snespalette.h"
+
 #include <QDialog>
 
 namespace Ui {
@@ -12,7 +14,7 @@ class InjectDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit InjectDialog(QWidget *parent = 0, QString imgFile = QString(), const QVector<QRgb>& originPal = QVector<QRgb>());
+    explicit InjectDialog(QWidget *parent = 0, QString imgFile = QString(), const SNESPalette& originPal = QVector<QRgb>());
     ~InjectDialog();
 
     bool    useImagePalette;

@@ -2,17 +2,17 @@
 #include <QDebug>
 
 
-QImage mergeTilesToImage(const QList<tile8> tiles, const QVector<QRgb>& palette, const TilesPattern& tilesPattern)
+QImage mergeTilesToImage(const QList<tile8> tiles, const SNESPalette& palette, const TilesPattern& tilesPattern)
 {
     QVector<QVector<tile8> > arrangedTiles = TilesPattern::transform(tilesPattern, tiles);
     unsigned tHeight = arrangedTiles.size();
     unsigned tWidth = arrangedTiles[0].size();
     //qDebug() << height;
     QImage newImage(tWidth * 8, tHeight * 8, QImage::Format_Indexed8);
-    newImage.setColorCount(palette.size());
-    for (unsigned int i = 0; i < palette.size(); i++)
+    newImage.setColorCount(palette.size);
+    for (unsigned int i = 0; i < palette.size; i++)
     {
-        newImage.setColor(i, palette[i]);
+        newImage.setColor(i, palette.colors.at(i).rgb);
     }
     QString plop = "";
 
@@ -72,9 +72,9 @@ QList<tile8> tilesFromPNG(const QString file)
     return toret;
 }
 
-QVector<QRgb> paletteFromPNG(const QString file)
+SNESPalette paletteFromPNG(const QString file)
 {
-    QVector<QRgb> toret;
+    SNESPalette toret(0);
     QImage image(file);
     if (image.format() != QImage::Format_Indexed8)
     {
@@ -86,6 +86,6 @@ QVector<QRgb> paletteFromPNG(const QString file)
         qCritical() << "Color count in" << file << "is superior to 16";
         return toret;
     }
-    toret = image.colorTable();
+    toret = SNESPalette(image.colorTable());
     return toret;
 }

@@ -100,9 +100,8 @@ QList<tile8> ROMDataEngine::extractTiles(TilePreset &preset)
     return rawTiles;
 }
 
-QVector<QRgb> ROMDataEngine::extractPalette(TilePreset &preset)
+SNESPalette ROMDataEngine::extractPalette(TilePreset &preset)
 {
-    QVector<QRgb> mPalette;
     QFile plop(romFile);
     unsigned int filePos = getRomPosition(preset, preset.pcPaletteLocation, preset.SNESPaletteLocation);
     qDebug() << "Palette pos : " << QString::number(filePos, 16);
@@ -112,21 +111,16 @@ QVector<QRgb> ROMDataEngine::extractPalette(TilePreset &preset)
     QByteArray ab = plop.read(palette_size * 2);
     qDebug() << ab;
     const char* data = ab.constData();
+    SNESPalette pal(ab);
     if (preset.paletteNoZeroColor)
     {
-        mPalette.append(qRgb(0x99, 0x99, 0x99));
-        palette_size--;
+        SNESColor col;
+
+        col.setRgb(qRgb(0x99, 0x99, 0x99));
+        pal.colors.prepend(col);
+        pal.colors.removeAt(pal.colors.size() - 1);
     }
-    r_palette* raw_pal = palette_extract(data, 0, palette_size);
-    for (unsigned int i = 0; i < palette_size; i++)
-    {
-        m_color col = raw_pal->colors[i];
-        //qDebug() << QString::number(qRgb(col.red, col.green, col.blue), 16);
-        mPalette.append(qRgb(col.red, col.green, col.blue));
-    }
-    palette_free(raw_pal);
-    qDebug() << mPalette;
-    return mPalette;
+    return pal;
 }
 
 unsigned int ROMDataEngine::injectTiles(const QList<tile8> &rawTiles, const TilePreset& preset)
@@ -192,7 +186,7 @@ unsigned int ROMDataEngine::injectTiles(const QList<tile8> &rawTiles, const Tile
     return writeLenght;
 }
 
-bool    ROMDataEngine::injectPalette(const QVector<QRgb>& mPalette, const TilePreset& preset)
+bool    ROMDataEngine::injectPalette(SNESPalette pal, const TilePreset& preset)
 {
     QFile file(romFile);
     unsigned int filePos = getRomPosition(preset, preset.pcPaletteLocation, preset.SNESPaletteLocation);
@@ -202,27 +196,9 @@ bool    ROMDataEngine::injectPalette(const QVector<QRgb>& mPalette, const TilePr
         return false;
     }
     file.seek(filePos);
-    unsigned int palette_size = mPalette.size();
     if (preset.paletteNoZeroColor)
-        palette_size--;
-    r_palette* pal = palette_create(palette_size, 0);
-    unsigned int pos = 0;
-    bool first = true;
-    foreach (QRgb color, mPalette) {
-        if (first && preset.paletteNoZeroColor)
-        {
-            first = false;
-            continue;
-        }
-        pal->colors[pos].blue = qBlue(color);
-        pal->colors[pos].green = qGreen(color);
-        pal->colors[pos].red = qRed(color);
-        pos++;
-    }
-    char* snes_string = palette_convert(*pal);
-    file.write(snes_string, pal->size * 2);
-    palette_free(pal);
-    file.close();
+        pal.colors.removeAt(0);
+    file.write(pal.encode());
     return true;
 }
 

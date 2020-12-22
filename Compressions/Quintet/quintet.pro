@@ -10,15 +10,16 @@ DESTDIR = ../../plugins
 SOURCES += Global.cpp \
            Comp.cpp \
            ../../lowlevelstuff/src/compressions/quintet1/quintet1_compression.c \
-           bitstream.c \
+           ../../lowlevelstuff/src/compressions/quintet1/bitstream/src/bitstream.c \
            quintetcompression.cpp
 
 HEADERS += Global.h \
            Comp.h \
            ../../lowlevelstuff/src/compressions/quintet1/quintet1_compression.h \
            quintetcompression.h \
-           bitstream.h
+           ../../lowlevelstuff/src/compressions/quintet1/bitstream/include/bitstream.h
 
-INCLUDEPATH += ../../lowlevelstuff/src/compressions/quintet1/
+INCLUDEPATH += ../../lowlevelstuff/src/compressions/quintet1/ \
+               ../../lowlevelstuff/src/compressions/quintet1/bitstream/include/
 
 DISTFILES += quintet.json

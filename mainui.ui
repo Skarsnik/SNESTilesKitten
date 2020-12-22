@@ -742,7 +742,7 @@ PC locations all assume the rom does not have the SMC header</string>
         <item row="1" column="2">
          <widget class="QPushButton" name="editPaletteButton">
           <property name="enabled">
-           <bool>false</bool>
+           <bool>true</bool>
           </property>
           <property name="text">
            <string>Edit Palette</string>
@@ -889,8 +889,8 @@ PC locations all assume the rom does not have the SMC header</string>
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="tilesLocationButtonGroup"/>
   <buttongroup name="buttonGroup_2"/>
+  <buttongroup name="tilesLocationButtonGroup"/>
   <buttongroup name="buttonGroup"/>
   <buttongroup name="headerButtonGroup"/>
   <buttongroup name="paletteGroupButton"/>

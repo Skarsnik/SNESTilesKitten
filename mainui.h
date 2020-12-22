@@ -82,7 +82,7 @@ private:
     ROMDataEngine   dataEngine;
 
     QList<tile8>    rawTiles;
-    QVector<QRgb>   mPalette;
+    SNESPalette     mPalette;
 
     QMap<QString, CompressionInfo>    compressInfos;
 

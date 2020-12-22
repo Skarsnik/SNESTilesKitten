@@ -27,6 +27,11 @@ void SNESColor::setSNES(quint16 val)
 }
 
 
+SNESPalette::SNESPalette()
+{
+    size = 0;
+}
+
 SNESPalette::SNESPalette(quint8 mSize)
 {
     size = mSize;
@@ -39,6 +44,7 @@ SNESPalette::SNESPalette(quint8 mSize)
 SNESPalette::SNESPalette(QByteArray data)
 {
     assert((data.size() % 4 == 0) && data.size() <= 32);
+    size = data.size() / 2;
     for (unsigned i = 0; i < data.size(); i += 2)
     {
         SNESColor col;
@@ -48,6 +54,16 @@ SNESPalette::SNESPalette(QByteArray data)
         col.rgb = qRgb(mColor.red, mColor.green, mColor.blue);
         colors.append(col);
     }
+}
+
+SNESPalette::SNESPalette(QVector<QRgb> cols)
+{
+    foreach(QRgb col, cols) {
+        SNESColor scol;
+        scol.setRgb(col);
+        colors.append(scol);
+    }
+    size = cols.size();
 }
 
 #include <QDebug>

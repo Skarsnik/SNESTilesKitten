@@ -7,7 +7,7 @@ GraphicsTilesScene::GraphicsTilesScene(QObject* parent) : QGraphicsScene(parent)
     tilesZoom = 30;
 }
 
-void GraphicsTilesScene::buildScene(const QList<tile8> &tiles, const QVector<QRgb> mPalette, const TilesPattern &tp)
+void GraphicsTilesScene::buildScene(const QList<tile8> &tiles, const SNESPalette mPalette, const TilesPattern &tp)
 {
     arrangedTiles = TilesPattern::transform(tp, tiles);
     tilesPattern = tp;
@@ -20,10 +20,10 @@ void GraphicsTilesScene::buildScene(const QList<tile8> &tiles, const QVector<QRg
         {
             tile8 tile = arrangedTiles[j][i];
             QImage newImage(8, 8, QImage::Format_Indexed8);
-            newImage.setColorCount(mPalette.size());
-            for (int i = 0; i < mPalette.size(); i++)
+            newImage.setColorCount(mPalette.size);
+            for (int i = 0; i < mPalette.size; i++)
             {
-                newImage.setColor(i, mPalette[i]);
+                newImage.setColor(i, mPalette.colors.at(i).rgb);
             }
             for (int i = 0; i < 8; i++)
             {

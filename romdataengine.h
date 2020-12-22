@@ -5,6 +5,7 @@
 #include "lowlevelstuff/src/tile.h"
 #include "myrominfo.h"
 #include "compressioninterface.h"
+#include "snespalette.h"
 
 #include <QDir>
 #include <QRgb>
@@ -15,10 +16,10 @@ public:
     ROMDataEngine();
     static bool            loadCompressionPlugins(QDir pluginsDir);
     QList<tile8>    extractTiles(TilePreset& preset);
-    QVector<QRgb>   extractPalette(TilePreset& preset);
+    SNESPalette     extractPalette(TilePreset& preset);
 
     unsigned int    injectTiles(const QList<tile8>& rawTiles, const TilePreset &preset);
-    bool            injectPalette(const QVector<QRgb>& mPalette, const TilePreset& preset);
+    bool            injectPalette(SNESPalette pal, const TilePreset& preset);
 
     ROMInfo         romInfo;
     bool            overrideHeaderInfo;

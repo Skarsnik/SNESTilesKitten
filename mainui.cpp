@@ -72,7 +72,7 @@ MainUI::MainUI(QWidget *parent) :
         cpt++;
     }
     ui->tilePatternComboBox->setCurrentText("normal");
-    if (1) {
+    if (0) {
         openRom("F:\\Emulation\\Soul Blazer (U) [!]\\Soul Blazer (US).smc");
         loadPreset("F:\\Project\\SNESTilesKitten\\Presets\\Soul Blazer - Hero sprite.stk");
     }
@@ -136,7 +136,7 @@ bool MainUI::extractPalette()
 {
     dataEngine.overridenHeaderInfo = romHasHeader;
     mPalette = dataEngine.extractPalette(currentSet);
-    return !mPalette.isEmpty();
+    return (mPalette.size != 0);
 }
 
 
@@ -152,10 +152,10 @@ void MainUI::buildPaletteScene()
     unsigned int i = 0;
     unsigned colPos = 0;
     palScene->setBackgroundBrush(Qt::black);
-    foreach(QRgb col, mPalette)
+    foreach(SNESColor col, mPalette.colors)
     {
         GraphicsPaletteColorItem *newItem = new GraphicsPaletteColorItem();
-        newItem->color = col;
+        newItem->color = col.rgb;
         newItem->iColor = colPos;
         newItem->setPos(i * newItem->boundingRect().width() + i, j * newItem->boundingRect().width() + j);
         palScene->addItem(newItem);
@@ -170,13 +170,14 @@ void MainUI::buildPaletteScene()
 
 void MainUI::setGrayscalePalette(unsigned int paletteSize)
 {
-    mPalette.clear();
+    SNESPalette newPal(paletteSize);
     unsigned int psize = paletteSize;
     for (unsigned int i = 0; i < psize; i++)
     {
         QRgb color = qRgb(i * (255 / psize), i * (255 / psize), i * (255 / psize));
-        mPalette.append(color);
+        newPal.colors[i].setRgb(color);
     }
+    mPalette = newPal;
 }
 
 void MainUI::closeEvent(QCloseEvent *event)
@@ -503,9 +504,9 @@ void MainUI::on_pngImportpushButton_clicked()
             }
             if ((currentSet.pcPaletteLocation != 0 || currentSet.SNESPaletteLocation != 0) && iDiag.useImagePalette)
             {
-                QVector<QRgb> ImportedPalette = paletteFromPNG(pngFile);
-                dataEngine.injectPalette(ImportedPalette, currentSet);
-                mPalette = ImportedPalette;
+                SNESPalette importedPalette = paletteFromPNG(pngFile);
+                dataEngine.injectPalette(importedPalette, currentSet);
+                mPalette = importedPalette;
             }
             if (iDiag.copyRom)
             {
@@ -552,14 +553,6 @@ void MainUI::on_netaButton_clicked()
 void MainUI::on_editPaletteButton_clicked()
 {
     paletteEditor->show();
-    SNESPalette pal(mPalette.size());
-    int cpt = 0;
-    foreach(QRgb rgb, mPalette)
-    {
-        SNESColor col;
-        col.setRgb(rgb);
-        pal.colors[cpt++] = col;
-    }
-    paletteEditor->setPalette(pal);
+    paletteEditor->setPalette(mPalette);
     paletteEditor->setRomFile(romFile);
 }

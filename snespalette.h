@@ -20,8 +20,10 @@ struct SNESColor
 class SNESPalette
 {
 public:
+    SNESPalette();
     SNESPalette(quint8 mSize);
     SNESPalette(QByteArray snesPal);
+    SNESPalette(QVector<QRgb>);
 
     QByteArray          encode();
     quint8              size;

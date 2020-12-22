@@ -22,4 +22,5 @@ SOURCES += ../romdataengine.cpp \
     ../myrominfo.cpp \
     ../pngexportimport.cpp \
     ../tilespattern.cpp \
+    ../snespalette.cpp \
     tinymain.cpp

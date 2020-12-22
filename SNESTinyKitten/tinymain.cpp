@@ -143,7 +143,7 @@ void    extract()
     preset.load(presetFile);
     QList<tile8> rawTiles = dataEngine.extractTiles(preset);
     fprintf(stdout, "%d tiles extracted\n", rawTiles.size());
-    QVector<QRgb> mPalette = dataEngine.extractPalette(preset);
+    SNESPalette mPalette = dataEngine.extractPalette(preset);
     if (pngFile)
     {
         QImage ImgExport = mergeTilesToImage(rawTiles, mPalette, preset.tilesPattern);
@@ -185,7 +185,7 @@ void    inject()
         rawTiles = tilesFromPNG(externalFile);
         rawTiles = TilesPattern::reverse(preset.tilesPattern, rawTiles);
         fprintf(stdout, "Number of tile extracted from the PNG : %d\n", rawTiles.size());
-        QVector<QRgb> mPalette = paletteFromPNG(externalFile);
+        SNESPalette mPalette = paletteFromPNG(externalFile);
         fprintf(stdout, "Preset file says lenght is : %d\n", preset.length);
         unsigned int injectedSize = dataEngine.injectTiles(rawTiles, preset);
         if (injectedSize == 0)

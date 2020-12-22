@@ -5,16 +5,16 @@
 #include "ui_injectdialog.h"
 #include <QDebug>
 
-void    createPaletteScene(QGraphicsScene* palScene, QVector<QRgb> pal)
+void    createPaletteScene(QGraphicsScene* palScene, SNESPalette pal)
 {
     unsigned int j = 0;
     unsigned int i = 0;
     unsigned colPos = 0;
     palScene->setBackgroundBrush(Qt::black);
-    foreach(QRgb col, pal)
+    foreach(SNESColor col, pal.colors)
     {
         GraphicsPaletteColorItem *newItem = new GraphicsPaletteColorItem();
-        newItem->color = col;
+        newItem->color = col.rgb;
         newItem->iColor = colPos;
         newItem->setPos(i * newItem->boundingRect().width() + i, j * newItem->boundingRect().width() + j);
         palScene->addItem(newItem);
@@ -27,7 +27,7 @@ void    createPaletteScene(QGraphicsScene* palScene, QVector<QRgb> pal)
     }
 }
 
-InjectDialog::InjectDialog(QWidget *parent, QString imgFile, const QVector<QRgb> &originPal) :
+InjectDialog::InjectDialog(QWidget *parent, QString imgFile, const SNESPalette& originPal) :
     QDialog(parent),
     ui(new Ui::InjectDialog)
 {
@@ -36,7 +36,7 @@ InjectDialog::InjectDialog(QWidget *parent, QString imgFile, const QVector<QRgb>
     /*QImage img(imgFile);*/
     QPixmap pix;
     pix.load(imgFile);
-    QVector<QRgb> pal = paletteFromPNG(imgFile);
+    SNESPalette pal = paletteFromPNG(imgFile);
 
     QGraphicsScene* imgPaletteScene = new QGraphicsScene(this);
     QGraphicsScene* originalPaletteScene = new QGraphicsScene(this);
