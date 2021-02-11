@@ -97,6 +97,13 @@
           </layout>
          </item>
          <item>
+          <widget class="QLabel" name="label_8">
+           <property name="text">
+            <string>SNES Value is the 2 bytes value used by the SNES</string>
+           </property>
+          </widget>
+         </item>
+         <item>
           <layout class="QHBoxLayout" name="horizontalLayout_5">
            <item>
             <widget class="QLabel" name="label_6">
@@ -109,6 +116,13 @@
             <widget class="QLineEdit" name="lineEditSnes"/>
            </item>
           </layout>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_7">
+           <property name="text">
+            <string>RGB Values are html/normal values (0-255)</string>
+           </property>
+          </widget>
          </item>
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -173,7 +187,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButton_2">
+        <widget class="QPushButton" name="quitPushButton">
          <property name="text">
           <string>Save &amp; Quit</string>
          </property>

@@ -41,6 +41,12 @@ MainUI::MainUI(QWidget *parent) :
     tileScene = new GraphicsTilesScene();
     palScene = new QGraphicsScene();
     paletteEditor = new PaletteEditor();
+    connect(paletteEditor, &PaletteEditor::paletteChanged, this, [=] {
+        mPalette = paletteEditor->palette();
+        buildPaletteScene();
+        buildTileScene();
+    });
+
     ui->graphicsView->setScene(tileScene);
     ui->paletteGraphicsView->setScene(palScene);
     setGrayscalePalette();

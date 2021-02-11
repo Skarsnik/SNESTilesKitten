@@ -19,19 +19,28 @@ public:
     explicit PaletteEditor(QWidget *parent = nullptr);
     ~PaletteEditor();
     void setPalette(SNESPalette pal);
-    SNESPalette getCurrentPalette();
+    SNESPalette palette() const;
+
     void    setRomFile(QString fileName);
+
+
+signals:
+    void paletteChanged();
 
 private slots:
     void on_lineEditSnes_editingFinished();
 
     void on_searchButton_clicked();
 
+    void on_pushButton_clicked();
+
+    void on_quitPushButton_clicked();
+
 private:
     Ui::PaletteEditor*          ui;
     QGraphicsScene*             scene;
     GraphicsPaletteColorItem*   colorItem;
-    SNESPalette                 palette;
+    SNESPalette                 m_palette;
     QString                     rom;
     void editColor();
 };

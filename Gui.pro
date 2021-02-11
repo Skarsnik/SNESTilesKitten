@@ -36,7 +36,8 @@ SOURCES += main.cpp\
     myrominfo.cpp \
     paletteeditor.cpp \
     graphicspaletteview.cpp \
-    snespalette.cpp
+    snespalette.cpp \
+    emupaletteimporter.cpp
 
 HEADERS  += mainui.h \
     tilepreset.h \
@@ -58,7 +59,8 @@ HEADERS  += mainui.h \
     myrominfo.h \
     paletteeditor.h \
     graphicspaletteview.h \
-    snespalette.h
+    snespalette.h \
+    emupaletteimporter.h
 
 FORMS    += mainui.ui \
     presetsavedialog.ui \

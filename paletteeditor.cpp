@@ -8,7 +8,7 @@
 PaletteEditor::PaletteEditor(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::PaletteEditor),
-    palette(16)
+    m_palette(16)
 {
     ui->setupUi(this);
     scene = new QGraphicsScene();
@@ -19,7 +19,7 @@ PaletteEditor::PaletteEditor(QWidget *parent) :
         ui->lineEditB->setText(QString::number(qBlue(colorItem->color), 16));
         ui->lineEditR->setText(QString::number(qRed(colorItem->color), 16));
         ui->lineEditG->setText(QString::number(qGreen(colorItem->color), 16));
-        ui->lineEditSnes->setText(QString::number(palette.colors[colorItem->iColor].snes, 16));
+        ui->lineEditSnes->setText(QString::number(m_palette.colors[colorItem->iColor].snes, 16));
     });
     connect(ui->lineEditR, &QLineEdit::editingFinished, this, &PaletteEditor::editColor);
     connect(ui->lineEditG, &QLineEdit::editingFinished, this, &PaletteEditor::editColor);
@@ -34,7 +34,7 @@ void    PaletteEditor::setPalette(SNESPalette pal)
     unsigned colPos = 0;
     scene->clear();
     scene->setBackgroundBrush(Qt::black);
-    palette = pal;
+    m_palette = pal;
     foreach(SNESColor col, pal.colors)
     {
         GraphicsPaletteColorItem *newItem = new GraphicsPaletteColorItem();
@@ -49,11 +49,19 @@ void    PaletteEditor::setPalette(SNESPalette pal)
             i = 0;
         }
     }
+    if (pal.size == 16)
+        ui->paletteSize16Radio->setChecked(true);
+    if (pal.size == 8)
+        ui->paletteSize8Radio->setChecked(true);
+    if (pal.size == 4)
+        ui->paletteSize4Radio->setChecked(true);
+    if (pal.size == 2)
+        ui->paletteSize2Radio->setChecked(true);
 }
 
-SNESPalette PaletteEditor::getCurrentPalette()
+SNESPalette PaletteEditor::palette() const
 {
-    return palette;
+    return m_palette;
 }
 
 void PaletteEditor::setRomFile(QString fileName)
@@ -70,8 +78,8 @@ void    PaletteEditor::editColor()
 {
     bool    ok;
     colorItem->color = qRgb(ui->lineEditR->text().toUInt(&ok, 16), ui->lineEditG->text().toUInt(&ok, 16), ui->lineEditB->text().toUInt(&ok, 16));
-    palette.colors[colorItem->iColor].setRgb(colorItem->color);
-    ui->lineEditSnes->setText(QString::number(palette.colors[colorItem->iColor].snes, 16));
+    m_palette.colors[colorItem->iColor].setRgb(colorItem->color);
+    ui->lineEditSnes->setText(QString::number(m_palette.colors[colorItem->iColor].snes, 16));
     scene->update();
 }
 
@@ -79,7 +87,7 @@ void    PaletteEditor::editColor()
 void PaletteEditor::on_lineEditSnes_editingFinished()
 {
     bool    ok;
-    SNESColor& col = palette.colors[colorItem->iColor];
+    SNESColor& col = m_palette.colors[colorItem->iColor];
     col.setSNES(ui->lineEditSnes->text().toUInt(&ok, 16));
     ui->lineEditR->setText(QString::number(qRed(col.rgb)));
     ui->lineEditB->setText(QString::number(qBlue(col.rgb)));
@@ -105,7 +113,7 @@ void PaletteEditor::on_searchButton_clicked()
     QFile romQFile(rom);
     romQFile.open(QIODevice::ReadOnly);
     QByteArray romData = romQFile.readAll();
-    QByteArray paletteData = palette.encode();
+    QByteArray paletteData = m_palette.encode();
     //QByteArray paletteData = sbData();
     qDebug() << paletteData;
     int pos = romData.indexOf(paletteData);
@@ -114,7 +122,18 @@ void PaletteEditor::on_searchButton_clicked()
     if (pos == -1)
         text = tr("No corresponding data found in the rom");
     else {
-        text = QString(tr("Data for palette found at : %1")).arg(pos, 16);
+        text = QString(tr("Data for palette found at : %1")).arg(pos, 0, 16);
     }
     QMessageBox::information(this, tr("Palette Data "),  text);
+}
+
+void PaletteEditor::on_pushButton_clicked()
+{
+    emit paletteChanged();
+}
+
+void PaletteEditor::on_quitPushButton_clicked()
+{
+    emit paletteChanged();
+    this->hide();
 }
