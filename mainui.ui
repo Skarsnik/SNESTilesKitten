@@ -398,6 +398,9 @@ PC locations all assume the rom does not have the SMC header</string>
                <property name="text">
                 <string>4 bpp</string>
                </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
                <attribute name="buttonGroup">
                 <string notr="true">paletteGroupButton</string>
                </attribute>
@@ -891,8 +894,8 @@ PC locations all assume the rom does not have the SMC header</string>
  <buttongroups>
   <buttongroup name="buttonGroup_2"/>
   <buttongroup name="tilesLocationButtonGroup"/>
+  <buttongroup name="paletteGroupButton"/>
   <buttongroup name="buttonGroup"/>
   <buttongroup name="headerButtonGroup"/>
-  <buttongroup name="paletteGroupButton"/>
  </buttongroups>
 </ui>
